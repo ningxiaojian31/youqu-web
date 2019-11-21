@@ -131,6 +131,15 @@
 				"navigationBarBackgroundColor":"#3B7ED5",
 				"navigationBarTextStyle":"white"
 			}
+		},
+		//我的
+		{
+			"path": "pages/netty/chat/chat/chat",
+			"style": {
+				"navigationBarTitleText": "正在聊天",
+				"navigationBarBackgroundColor":"#3B7ED5",
+				"navigationBarTextStyle":"white"
+			}
 		}
     ],
 	"globalStyle": {
@@ -152,7 +161,7 @@
 	            "text" : "首页"
 	        },
 			{
-			    "pagePath" : "pages/chat/index",
+			    "pagePath" : "pages/netty/chat/chat/chat",
 			    "iconPath" : "static/tab-home.png",
 			    "selectedIconPath" : "static/tab-home-current.png",
 			    "text" : "信息中心"
