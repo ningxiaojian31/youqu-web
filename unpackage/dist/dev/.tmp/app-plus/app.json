@@ -1,0 +1,72 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/component/component",
+    "pages/details/details",
+    "pages/details/videoDetails",
+    "pages/shilu-login/blog",
+    "pages/shilu-login/forget",
+    "pages/shilu-login/login",
+    "pages/shilu-login/reg",
+    "pages/me/me",
+    "pages/chat/index",
+    "pages/chat/chat",
+    "pages/netty/chat/chat/chat",
+    "pages/netty/chat/chat/main_chat"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "新闻模版",
+    "navigationBarBackgroundColor": "#ec706b",
+    "backgroundColor": "#f8f8f8"
+  },
+  "tabBar": {
+    "color": "#C0C4CC",
+    "selectedColor": "#fa436a",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/tab-home.png",
+        "selectedIconPath": "static/tab-home-current.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/netty/chat/chat/main_chat",
+        "iconPath": "static/tab-home.png",
+        "selectedIconPath": "static/tab-home-current.png",
+        "text": "信息中心"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "iconPath": "static/tab-home.png",
+        "selectedIconPath": "static/tab-home-current.png",
+        "text": "个人中心"
+      }
+    ]
+  },
+  "nvue": {
+    "pages": {
+      "pages/nvue/nvue.html": {
+        "window": {
+          "usingComponents": {},
+          "navigationBarTitleText": "首页",
+          "titleNView": false,
+          "navigationBarTextStyle": "white",
+          "bounce": "none"
+        },
+        "nvue": true
+      }
+    }
+  },
+  "nvueCompiler": "weex",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "友趣社区",
+  "compilerVersion": "2.3.7",
+  "usingComponents": {}
+}

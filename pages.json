@@ -132,11 +132,20 @@
 				"navigationBarTextStyle":"white"
 			}
 		},
-		//我的
+		//当前聊天
 		{
 			"path": "pages/netty/chat/chat/chat",
 			"style": {
 				"navigationBarTitleText": "正在聊天",
+				"navigationBarBackgroundColor":"#3B7ED5",
+				"navigationBarTextStyle":"white"
+			}
+		},
+		//聊天记录
+		{
+			"path": "pages/netty/chat/chat/main_chat",
+			"style": {
+				"navigationBarTitleText": "聊天记录",
 				"navigationBarBackgroundColor":"#3B7ED5",
 				"navigationBarTextStyle":"white"
 			}
@@ -161,7 +170,7 @@
 	            "text" : "首页"
 	        },
 			{
-			    "pagePath" : "pages/netty/chat/chat/chat",
+			    "pagePath" : "pages/netty/chat/chat/main_chat",
 			    "iconPath" : "static/tab-home.png",
 			    "selectedIconPath" : "static/tab-home-current.png",
 			    "text" : "信息中心"
