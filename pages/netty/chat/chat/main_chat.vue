@@ -184,12 +184,13 @@
 						
 				//更新聊天快照
 				loadChatSnapshot:function(){
-					console.log("pre===============");
-					this.ops.url = common.apiHost+'/chatrecord/findUnreadByUserid?userid=1';
-					console.log("post===============");
-					var res = common.get(this.ops);
-					console.log(JSON.stringify(res));
-					this.indexList = res;
+					var url = common.apiHost+'/chatrecord/findUnreadByUserid?userid=1';
+					var method = "GET";
+					common.request(url,null,method).then(data => {
+                        console.log(JSON.stringify(data));
+					  this.indexList = data.data;
+                    })
+					
 					
 					
 					

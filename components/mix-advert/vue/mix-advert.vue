@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
 	<view 
 		class="mix-advert-content" 
 		:class="advertState===0 ? 'none' : advertState===1 ? 'show' : 'hide'"
@@ -132,4 +132,3 @@
 		line-height: 1;
 	}
 </style>
- -->

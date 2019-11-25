@@ -1,7 +1,7 @@
 
 module.exports = {
-	apiHost:"http://10.74.158.31:9000",
-	wsHost:"ws://10.74.158.31:9001/ws", 
+	apiHost:"http://192.168.0.108:9000",
+	wsHost:"ws://192.168.0.108:9001/ws", 
 	appRoot:"https://www.fd175.com/uniapp/h5/", 
     json_add:function(a,b){
  
@@ -83,25 +83,26 @@ module.exports = {
 		// #endif
 		return false;
 	},
-	get:function(ops){
-		var result = "00000000";
-		uni.request({
-			url:ops.url, //仅为示例，并非真实接口地址。,
-			method:"GET",
-			data:ops.data,
-			header: {
-				'content-type': 'application/json' //自定义请求头信息
-			},
-			success: (res) => {
-				return res.data;
-				console.log("success-------");
-			},
-			fail: (res) =>{
-				result = res.data;
-				console.log("fail-------");
-			}
-		});
-		return result;
+	request: (url, data,method) => {
+	    var httpDefaultOpts = {
+	        url: url,
+	        data: data,
+	        method: method,
+	        header:  {
+	        "Content-Type": "application/json; charset=UTF-8"
+	        },
+		};
+	    var promise = new Promise(function(resolve, reject) {
+	        uni.request(httpDefaultOpts).then((res) => {
+				    console.log("sucess===============")
+	                resolve(res[1]);
+	            }
+	        ).catch((response) => {
+	                reject(response);
+	            }
+	        )
+	    })
+	    return promise;
 	},
 	post:function(ops){
 		var callback=callback;
