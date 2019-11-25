@@ -1,8 +1,8 @@
 
 module.exports = {
 	apiHost:"http://10.74.158.31:9000",
+	wsHost:"ws://10.74.158.31:9001/ws", 
 	appRoot:"https://www.fd175.com/uniapp/h5/", 
-	wsHost:"wss://wss.deituicms.com:8282", 
     json_add:function(a,b){
  
         if(a==undefined || a.length==0) return b;
@@ -84,34 +84,24 @@ module.exports = {
 		return false;
 	},
 	get:function(ops){
-		var ops=ops;
-		if(ops.data==undefined){
-			ops.data={
-				authcode:this.getAuthCode(),
-				fromapp:this.fromapp(),
-				ajax:1
-			};
-		}else{
-			ops.data.authcode=this.getAuthCode();
-			ops.data.fromapp=this.fromapp();
-			ops.data.ajax=1;
-		}
-		
+		var result = "00000000";
 		uni.request({
-			url:ops.url,
+			url:ops.url, //仅为示例，并非真实接口地址。,
 			method:"GET",
 			data:ops.data,
-			success:function(rs){
-				
-				if(rs.data.error==1000){
-					uni.navigateTo({
-						url:"../login/index"
-					})
-				}else{
-					ops.success(rs.data);
-				}
+			header: {
+				'content-type': 'application/json' //自定义请求头信息
+			},
+			success: (res) => {
+				return res.data;
+				console.log("success-------");
+			},
+			fail: (res) =>{
+				result = res.data;
+				console.log("fail-------");
 			}
-		})
+		});
+		return result;
 	},
 	post:function(ops){
 		var callback=callback;

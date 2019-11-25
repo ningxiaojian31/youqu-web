@@ -40,13 +40,14 @@
 
 <script>
 	 
-	// import common from '@/common/common.js';
 	import mtFooter from "@/components/footer.vue";
 	import chatDb from "@/common/chatdb.js";
+	import common from "@/common/common.js";
 	 
 	import chatMsg from "@/components/chatmsg.vue";
 	export default {
 		components:{
+			// common,
 			mtFooter,
 			chatMsg,
 		},
@@ -59,8 +60,20 @@
 				//socket相关变量
 				socketTask: null,
 				// 确保websocket是打开状态
-				is_open_socket: false
+				is_open_socket: false,
+				ops:{
+					url:null,
+					data:null
+				}
 			}
+		},
+		onLoad() {
+			console.log("onLoad====================");
+			//初始化socket连接
+			this.connectSocketInit();
+			//更新消息
+			this.loadChatSnapshot();
+			
 		},
 		mounted() {
 			this.test();
@@ -69,10 +82,6 @@
 			if(this.isLoad){
 				this.pmList();
 			}
-			//初始化socket连接
-			this.connectSocketInit();
-			//更新消息
-			this.loadChatSnapshot();
 			
 		},
 		methods: {
@@ -104,10 +113,11 @@
 			//websocket
 			// 进入这个页面的时候创建websocket连接【整个页面随时使用】
 			connectSocketInit() {
+				var that = this;
 				// 创建一个this.socketTask对象【发送、接收、关闭socket都由这个对象操作】
 				this.socketTask = uni.connectSocket({
 					// 【非常重要】必须确保你的服务器是成功的,如果是手机测试千万别使用ws://127.0.0.1:9099【特别容易犯的错误】
-					url: "ws://10.74.158.31:9001/ws",
+					url: common.wsHost,
 					success(data) {
 						console.log("websocket连接成功");
 					},
@@ -174,22 +184,33 @@
 						
 				//更新聊天快照
 				loadChatSnapshot:function(){
-					uni.request({
-						url: 'http://10.74.158.31:9000/chatrecord/findUnreadByUserid?userid=1', //仅为示例，并非真实接口地址。
-						data: {
+					console.log("pre===============");
+					this.ops.url = common.apiHost+'/chatrecord/findUnreadByUserid?userid=1';
+					console.log("post===============");
+					var res = common.get(this.ops);
+					console.log(JSON.stringify(res));
+					this.indexList = res;
+					
+					
+					
+					// uni.request({
+					// 	url:common.apiHost+'/chatrecord/findUnreadByUserid?userid=1', //仅为示例，并非真实接口地址。
+					// 	data: {
 							
-						},
-						header: {
-							'content-type': 'application/json' //自定义请求头信息
-						},
-						success: (res) => {
-							// console.log(JSON.stringify(res.data));
-							this.indexList = res.data;
-						},
-						fail: (res) =>{
-							console.log(res.data);
-						}
-					});
+					// 	},
+					// 	header: {
+					// 		'content-type': 'application/json' //自定义请求头信息
+					// 	},
+					// 	success: (res) => {
+					// 		// console.log(JSON.stringify(res.data));
+					// 		this.indexList = res.data;
+					// 		console.log("success-------")
+					// 	},
+					// 	fail: (res) =>{
+					// 		console.log(res.data);
+					// 		console.log("fail-------")
+					// 	}
+					// });
 				}
 				
 
