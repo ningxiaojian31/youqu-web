@@ -126,16 +126,20 @@
 			    // 消息的发送和接收必须在正常连接打开中,才能发送或接收【否则会失败】
 			    this.socketTask.onOpen((res) => {
 				    console.log("WebSocket连接正常打开中...！");
-				    this.is_open_socket = true;
+					if(this.socketTask != null && this.socketTask != undefined){
+						//对象挂载，声明为全局变量
+						 Vue.prototype.socketTask = this.socketTask;
+					}
+				   
 					// 注：只有连接正常打开中 ，才能正常成功发送消息
 					var message = common.getMessage(common.MSG_TYPE_SEND, 1, 1, "我是客户端的消息", null, null);
 					this.socketTask.send({
 					    data: message,
 						async success(){
-							console.log("成功");
+							console.log("发送消息成功");
 						},
 						async fail() {
-							console.log("失败");
+							console.log("发送消息失败");
 						}
 
 					});
@@ -146,9 +150,9 @@
 					});
 					
 					//相隔8秒发送心跳信息
-					setTimeout(function(){
+					setInterval(function(){
 						that.keepalive();
-					}, 2000);
+					}, 10000);
 				})
 			
 				// 这里仅是事件监听【如果socket关闭了会执行】
@@ -175,10 +179,15 @@
 				// 如果当前状态已经连接，无需再次初始化websocket
 				if(this.socketTask != null && this.socketTask != undefined ) {
 					console.log("发送心跳包================");
-					console.log(msg);
-					console.log(this.socketTask);
-					console.log(that.socketTask);
-					that.socketTask.send(msg);
+					that.socketTask.send({
+						data:msg,
+						success(){
+							console.log("发送心跳包成功=======");
+						},
+						fail(){
+							console.log("发送心跳包失败=======");
+						}
+					});
 					
 					// 只有发送聊天消息才重新加载好友快照
 					if(JSON.parse(msg).type == common.MSG_TYPE_SEND) {
@@ -190,8 +199,7 @@
 					console.log("初始化，发送心跳包================");
 					// 重新连接
 					that.connectSocketInit();
-					// 异步调用需要设置延时
-					// 三秒后再重新发送
+					//发送消息
 					that.socketTask.send(msg);
 				
 				}

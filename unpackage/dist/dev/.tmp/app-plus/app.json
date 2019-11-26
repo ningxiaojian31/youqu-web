@@ -60,13 +60,13 @@
       }
     }
   },
-  "nvueCompiler": "weex",
+  "nvueCompiler": "uni-app",
   "renderer": "auto",
   "splashscreen": {
     "alwaysShowBeforeRender": true,
     "autoclose": false
   },
   "appname": "友趣社区",
-  "compilerVersion": "2.3.7",
+  "compilerVersion": "2.4.2",
   "usingComponents": {}
 }

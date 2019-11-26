@@ -182,6 +182,10 @@
 			if (this.wsConn) {
 				that.wsInit();
 			}
+			
+			console.log("全局对象开始===========");
+			console.log(Vue.prototype.socketTask);
+			console.log("全局对象结束===========");
 			this.initList();
 		},
 		methods: {
