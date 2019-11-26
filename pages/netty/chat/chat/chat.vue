@@ -386,7 +386,7 @@
 				lastMsg = msg;
 		        //发送消息
 				Vue.prototype.socketTask.send({
-					data:msg,
+					data:JSON.stringify(msg),
 					success(){
 						console.log("发送成功========");
 					},
