@@ -199,22 +199,13 @@
 			},
 			//加载聊天记录
 			initList:function(){
-				uni.request({
-					url: 'http://10.74.158.31:9000//chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888', //仅为示例，并非真实接口地址。
-					data: {
-						
-					},
-					header: {
-						'content-type': 'application/json' //自定义请求头信息
-					},
-					success: (res) => {
-						console.log(JSON.stringify(res.data));
-						this.list = res.data;
-					},
-					fail: (res) =>{
-						console.log(res.data);
-					}
-				});
+				
+				var url = common.apiHost+'/chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888';
+				var method = "GET";
+				common.request(url,null,method).then(data => {
+				    console.log(JSON.stringify(data));
+				  this.list = data.data;
+				})
 			},
 			
 			getList: function() {

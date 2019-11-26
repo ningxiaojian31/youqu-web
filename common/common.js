@@ -1,8 +1,26 @@
 
 module.exports = {
-	apiHost:"http://192.168.0.108:9000",
-	wsHost:"ws://192.168.0.108:9001/ws", 
-	appRoot:"https://www.fd175.com/uniapp/h5/", 
+	apiHost:"http://10.74.158.31:9000",
+	wsHost:"ws://10.74.158.31:9001/ws", 
+	// 消息类型
+	MSG_TYPE_CONN: 0,		// 连接
+	MSG_TYPE_SEND: 1,		// 发送消息
+	MSG_TYPE_REC: 2,		// 签收
+	MSG_TYPE_KEEPALIVE: 3,	// 客户端保持心跳
+	MSG_TYPE_RELOADFRIEND: 4	,// 重新拉取好友
+	//构造消息体
+	getMessage: function(type, userid, friendid, msg, msgid, ext) {
+		return {
+			type: type,
+			chatRecord: {
+				id: msgid,
+				userid: userid,
+				friendid: friendid,
+				message: msg,
+			},
+			ext: ext
+		};
+	},
     json_add:function(a,b){
  
         if(a==undefined || a.length==0) return b;
@@ -83,53 +101,67 @@ module.exports = {
 		// #endif
 		return false;
 	},
+	//json请求
 	request: (url, data,method) => {
-	    var httpDefaultOpts = {
+		var token = "";
+		uni.getStorage({  //携带token
+		    key: 'x-auth-token',  
+		    success: function(ress) {
+		        token = ress.data;
+		    }
+		});
+	    var ops = { //请求参数
 	        url: url,
 	        data: data,
 	        method: method,
 	        header:  {
-	        "Content-Type": "application/json; charset=UTF-8"
+	        "Content-Type": "application/json; charset=UTF-8", //json格式参数
+			"x-auth-token": token
 	        },
 		};
 	    var promise = new Promise(function(resolve, reject) {
-	        uni.request(httpDefaultOpts).then((res) => {
-				    console.log("sucess===============")
-	                resolve(res[1]);
+	        uni.request(ops).then((res) => {
+				    console.log("sucess===============");
+	                resolve(res[1]); //成功传递参数
 	            }
-	        ).catch((response) => {
-	                reject(response);
+	        ).catch((err) => {
+				    console.log("fail===============");
+	                reject(err); //失败传递参数
 	            }
 	        )
 	    })
 	    return promise;
 	},
-	post:function(ops){
-		var callback=callback;
-		var ops=ops;
-		if(ops.url.indexOf("?") >= 0){
-			ops.url+="&ajax=1&authcode="+this.getAuthCode()+"&fromapp="+this.fromapp();
-		}else{
-			ops.url+="?ajax=1&authcode="+this.getAuthCode()+"&fromapp="+this.fromapp();
-		}
-		
-		uni.request({
-			url:ops.url,
-			data:ops.data,
-			method:"POST",
-			header:{
-				"content-type":"application/x-www-form-urlencoded"
-			},
-			success:function(rs){
-				if(rs.data.error==1000){
-					uni.navigateTo({
-						url:"../login/index"
-					})
-				}else{
-					ops.success(rs.data);
-				}
-			}	
-		})
+	//表单请求
+	request_form: (url, data,method) => {
+		var token = "";
+		uni.getStorage({  //携带token
+		    key: 'x-auth-token',  
+		    success: function(ress) {
+		        token = ress.data;
+		    }
+		});
+	    var ops = { //请求参数
+	        url: url,
+	        data: data,
+	        method: method,
+	        header:  {
+	        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", //表单格式参数
+			"x-auth-token": token
+	        },
+		};
+	    var promise = new Promise(function(resolve, reject) {
+	        uni.request(ops).then((res) => {
+				    console.log("sucess===============");
+	                resolve(res[1]); //成功传递参数
+	            }
+	        ).catch((err) => {
+				    console.log("fail===============");
+	                reject(err); //失败传递参数
+	            }
+	        )
+	    })
+	    return promise;
 	},
 	goHome:function(){
 		uni.redirectTo({
