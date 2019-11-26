@@ -182,10 +182,10 @@
 					that.socketTask.send({
 						data:msg,
 						success(){
-							console.log("发送心跳包成功=======");
+							
 						},
 						fail(){
-							console.log("发送心跳包失败=======");
+							
 						}
 					});
 					
@@ -196,35 +196,28 @@
 					}
 				}
 				else {
-					console.log("初始化，发送心跳包================");
 					// 重新连接
 					that.connectSocketInit();
 					//发送消息
-					that.socketTask.send(msg);
+					that.socketTask.send({
+						data:msg,
+						success(){
+							
+						},
+						fail(){
+							
+						}
+					});
 				
 				}
 			},
 			// 不停地发送心跳包
 			keepalive: function() {
 				// 构建对象
-				var heartMessage = common.getMessage(common.MSG_TYPE_KEEPALIVE, null, null, null, null, null);
+				var heartMessage = common.getMessage(common.MSG_TYPE_SEND, null, null, null, null, null);
 				this.chat(JSON.stringify(heartMessage));
 			},
-				// clickRequest:function() {
-				// 	if (this.is_open_socket) {
-				// 		// websocket的服务器的原理是:发送一次消息,同时返回一组数据【否则服务器会进去死循环崩溃】
-				// 		this.socketTask.send({
-				// 			data: "请求一次发送一次message",
-				// 			async success() {
-				// 				console.log("消息发送成功");
-				// 			},
-				// 		});
-				// 	}
-				// },
-				// leave() {
-				// 	this.$uniReLaunch("/pages/tabbar/wallet/wallet")
-				// },
-						
+				
 						
 			//更新聊天快照
 			loadChatSnapshot:function(){

@@ -84,6 +84,7 @@
 	import chatDb from "@/common/chatdb.js"
 	import chatMsg from "@/components/chatmsg.vue";
 	import emo from "@/common/emo.js";
+	import common from "@/common/common.js";
 	var gid;
 	var groupid;
 	var uid = Date.parse(new Date());
@@ -135,18 +136,18 @@
 			}
 		},
 		onLoad: function() {
+			
+			this.initList();
+			
+			
 			var sys=uni.getSystemInfoSync()
 			windowHeight=sys.windowHeight;	
 			var that = this;
 			this.emoList = emo.emoList();
 			groupid=ops.groupid;
 			this.getPage();
-			
-			console.log("onLoad==================");
-			console.log(ops.socketTask);
-			
-		 
-			
+		
+		
 			//#ifndef H5
 			audioRecord = wx.getRecorderManager();
 
@@ -183,10 +184,6 @@
 				that.wsInit();
 			}
 			
-			console.log("全局对象开始===========");
-			console.log(Vue.prototype.socketTask);
-			console.log("全局对象结束===========");
-			this.initList();
 		},
 		methods: {
 			scrollY: function(e) {
@@ -203,11 +200,11 @@
 			},
 			//加载聊天记录
 			initList:function(){
-				
 				var url = common.apiHost+'/chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888';
 				var method = "GET";
 				common.request(url,null,method).then(data => {
-				    console.log(JSON.stringify(data));
+					console.log("加载当前聊天=======");
+				    //console.log(JSON.stringify(data));
 				  this.list = data.data;
 				})
 			},
@@ -384,21 +381,20 @@
 						}
 						break;
 				}
-				var msg = JSON.stringify({
-					wsclient_to: touid,
-					type: "say",
-					gid: gid,
-					content: content,
-					user_head:that.user.user_head,
-					nickname:that.user.nickname,
-					userid:that.user.userid
-				});
-                console.log(content);
+				var msg = common.getMessage(common.MSG_TYPE_SEND, 1, 1, content, null, null);
+                console.log(msg);
 				lastMsg = msg;
-				ws.send({
-					data: msg
+		        //发送消息
+				Vue.prototype.socketTask.send({
+					data:msg,
+					success(){
+						console.log("发送成功========");
+					},
+					fail(){
+						console.log("发送失败========");
+					}
 				});
-				that.saveHost(content);
+				//that.saveHost(content);
 				that.content = "";
 
 			},
