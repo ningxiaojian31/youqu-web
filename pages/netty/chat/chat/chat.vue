@@ -137,7 +137,10 @@
 		},
 		onLoad: function() {
 			
+			//加载聊天记录
 			this.initList();
+			//更新聊天信息
+			this.revMessage();
 			
 			
 			var sys=uni.getSystemInfoSync()
@@ -198,6 +201,17 @@
 				that.scrollTop = 0;
 				this.getList();
 			},
+			//更新聊天信息
+			revMessage:function(){
+				var that = this;
+				// 注：只有连接正常打开中 ，才能正常收到消息
+				Vue.prototype.socketTask.onMessage((res) => {
+					console.log("收到服务器内容：" + res.data);
+					//更新
+					console.log("更新消息成功=========");
+					that.list.push(res.data.chatRecord); 
+				});
+			},
 			//加载聊天记录
 			initList:function(){
 				var url = common.apiHost+'/chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888';
@@ -207,6 +221,51 @@
 				    //console.log(JSON.stringify(data));
 				  this.list = data.data;
 				})
+			},
+			
+			//发送消息
+			send: function(type, fileurl) {
+				var that = this;
+				var content;
+				switch (type) {
+					case "pic":
+						content = "[img=" + fileurl + "]"
+						break;
+					case "audio":
+						content = "[audio=" + fileurl + "]"
+						break;
+					case "video":
+						content = "[video=" + fileurl + "]"
+						break;
+					case "file":
+						content = fileurl.substring(fileurl.lastIndexOf("\/") + 1) + " [file=" + fileurl + "]";
+						break;
+					case "content":
+						content = that.content;
+						if (content == "") {
+							return false;
+						}
+						break;
+				}
+				var msg = common.getMessage(common.MSG_TYPE_SEND, 1, 1, content, null, null);
+			    console.log(msg);
+				lastMsg = msg;
+			    //发送消息
+				Vue.prototype.socketTask.send({
+					data:JSON.stringify(msg),
+					success(){
+						console.log("发送成功========");
+						//更新
+						console.log("更新消息成功=========");
+						that.list.push(msg.chatRecord);
+					},
+					fail(){
+						console.log("发送失败========");
+					}
+				});
+				//that.saveHost(content);
+				that.content = "";
+			
 			},
 			
 			getList: function() {
@@ -357,46 +416,6 @@
 			addEmo: function(s) {
 				s = "\\" + s + " ";
 				this.content += s;
-			},
-			send: function(type, fileurl) {
-				var that = this;
-				var content;
-				switch (type) {
-					case "pic":
-						content = "[img=" + fileurl + "]"
-						break;
-					case "audio":
-						content = "[audio=" + fileurl + "]"
-						break;
-					case "video":
-						content = "[video=" + fileurl + "]"
-						break;
-					case "file":
-						content = fileurl.substring(fileurl.lastIndexOf("\/") + 1) + " [file=" + fileurl + "]";
-						break;
-					case "content":
-						content = that.content;
-						if (content == "") {
-							return false;
-						}
-						break;
-				}
-				var msg = common.getMessage(common.MSG_TYPE_SEND, 1, 1, content, null, null);
-                console.log(msg);
-				lastMsg = msg;
-		        //发送消息
-				Vue.prototype.socketTask.send({
-					data:JSON.stringify(msg),
-					success(){
-						console.log("发送成功========");
-					},
-					fail(){
-						console.log("发送失败========");
-					}
-				});
-				//that.saveHost(content);
-				that.content = "";
-
 			},
 			saveHost: function(content) {
 				var that = this;

@@ -214,7 +214,7 @@
 			// 不停地发送心跳包
 			keepalive: function() {
 				// 构建对象
-				var heartMessage = common.getMessage(common.MSG_TYPE_SEND, null, null, null, null, null);
+				var heartMessage = common.getMessage(common.MSG_TYPE_KEEPALIVE, null, null, null, null, null);
 				this.chat(JSON.stringify(heartMessage));
 			},
 				
