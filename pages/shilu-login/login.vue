@@ -1,29 +1,29 @@
 <template>
 	<view class="content">
 		<view class="header">
-			<image src="../../static/shilu-login/logo.png"></image>
+			<image src="../../static/shilu-login/log"></image>
 		</view>
 		
 		<view class="list">
 			<view class="list-call">
-				<image class="img" src="/static/shilu-login/1.png"></image>
-				<input class="biaoti" v-model="phoneno" type="number" maxlength="11" placeholder="输入手机号" />
+				<image class="img" src="/static/shilu-login/email.png"></image>
+				<input class="biaoti" v-model="username" type="text" maxlength="25" placeholder="输入邮箱" />
 			</view>
 			<view class="list-call">
-				<image class="img" src="/static/shilu-login/2.png"></image>
+				<image class="img" src="/static/shilu-login/password.png"></image>
 				<input class="biaoti" v-model="password" type="text" maxlength="32" placeholder="输入密码" password="true" />
 			</view>
 			
 		</view>
 		
 		<view class="dlbutton" hover-class="dlbutton-hover" @tap="bindLogin()">
-			<text>登录</text>
+			<text class="log-btn">登录</text>
 		</view>
 		
 		<view class="xieyi">
 			<navigator url="forget" open-type="navigate">忘记密码</navigator>
 			<text>|</text>
-			<navigator url="reg" open-type="navigate">注册账户</navigator>
+			<navigator url="reg" open-type="navigate">注册账号</navigator>
 		</view>
 	</view>
 </template>
@@ -37,31 +37,17 @@
 		},
 		data() {
 			return {
-				phoneno:'',
+				username:'',
 				password:''
 			};
 		},
 		methods: {
 			...mapMutations(['login']),
 		    bindLogin() {
-				if (this.phoneno.length != 11) {
-				     uni.showToast({
-				        icon: 'none',
-				        title: '手机号不正确'
-				    });
-				    return;
-				}
-		        if (this.password.length < 6) {
-		            uni.showToast({
-		                icon: 'none',
-		                title: '密码不正确'
-		            });
-		            return;
-		        }
 				uni.request({
 				    url: 'http://***/login.html',
 				    data: {
-						phoneno:this.phoneno,
+						username:this.username,
 						password:this.password
 					},
 					method: 'POST',
@@ -82,7 +68,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	.content {
 		display: flex;
 		flex-direction: column;
@@ -107,7 +93,7 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		padding-top: 50upx;
+		padding-top: 130upx;
 		padding-left: 70upx;
 		padding-right: 70upx;
 	}
@@ -121,15 +107,15 @@
 		border-bottom: 1upx solid rgba(230,230,230,1);
 	}
 	.list-call .img{
-		width: 40upx;
-		height: 40upx;
+		width: 33upx;
+		height: 33upx;
 	}
 	.list-call .biaoti{
+		margin-left: 25upx;
 		flex: 1;
 		text-align: left;
 		font-size: 32upx;
 		line-height: 100upx;
-		margin-left: 16upx;
 	}
 
 	.dlbutton {
@@ -137,7 +123,7 @@
 		font-size: 34upx;
 		width:470upx;
 		height:100upx;
-		background:linear-gradient(-90deg,rgba(63,205,235,1),rgba(188,226,158,1));
+		background:#3B7ED5;
 		box-shadow:0upx 0upx 13upx 0upx rgba(164,217,228,0.2);
 		border-radius:50upx;
 		line-height: 100upx;
@@ -146,8 +132,11 @@
 		margin-right: auto;
 		margin-top: 100upx;
 	}
+	.log-btn{
+		margin: 23upx;
+	}
 	.dlbutton-hover {
-		background:linear-gradient(-90deg,rgba(63,205,235,0.9),rgba(188,226,158,0.9));
+		background:#6B7EDD;
 	}
 	.xieyi{
 		display: flex;
@@ -156,7 +145,7 @@
 		align-items: center;
 		font-size: 30upx;
 		margin-top: 80upx;
-		color: #FFA800;
+		color: #000000;
 		text-align: center;
 		height: 40upx;
 		line-height: 40upx;

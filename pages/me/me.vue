@@ -19,11 +19,11 @@
 						<view class="meVisitor">
 							<view class="meVisitorLt">
 								<view class="meVisitorTxt_02">0</view>
-								<view class="meVisitorTxt_01">模板1</view>
+								<view class="meVisitorTxt_01">关注</view>
 							</view>
 							<view class="meVisitorLt">
 								<view class="meVisitorTxt_02">0</view>
-								<view class="meVisitorTxt_01">模板2</view>
+								<view class="meVisitorTxt_01">粉丝</view>
 							</view>
 						</view>
 					</view>
@@ -31,23 +31,23 @@
 					
 					<!--订单-->
 					<view class="meOverBg">
-						<view class="meVisitorTitle">我的订单</view>
+						<view class="meVisitorTitle">个人相关</view>
 						<view class="meVisitor">
 							<view class="meOrderLt">
-								<view class="meOrderTxt_01"><image src="../../static/icon/meIcon_01.png"></image></view>
-								<view class="meOrderTxt_02">订单1</view>
+								<view class="meOrderTxt_01"><image src="../../static/icon/invitation.png"></image></view>
+								<view class="meOrderTxt_02">我的帖子</view>
 							</view>
 							<view class="meOrderLt">
-								<view class="meOrderTxt_01"><image src="../../static/icon/meIcon_01.png"></image></view>
-								<view class="meOrderTxt_02">订单2</view>
+								<view class="meOrderTxt_01"><image src="../../static/icon/comment.png"></image></view>
+								<view class="meOrderTxt_02">我的评论</view>
 							</view>
 							<view class="meOrderLt">
-								<view class="meOrderTxt_01"><image src="../../static/icon/meIcon_01.png"></image></view>
-								<view class="meOrderTxt_02">订单3</view>
+								<view class="meOrderTxt_01"><image src="../../static/icon/collect.png"></image></view>
+								<view class="meOrderTxt_02">我的收藏</view>
 							</view>
 							<view class="meOrderLt">
-								<view class="meOrderTxt_01"><image src="../../static/icon/meIcon_01.png"></image></view>
-								<view class="meOrderTxt_02">订单4</view>
+								<view class="meOrderTxt_01"><image src="../../static/icon/good.png"></image></view>
+								<view class="meOrderTxt_02">我赞过的</view>
 							</view>
 						</view>
 					</view>
@@ -56,18 +56,16 @@
 					<!--其他-->
 					<view class="meOverBg">
 						<view class="businessList">
-							<view class="businessListTxt">其他1</view>
-							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
+							<view class="businessListTxt">设置</view>
 						</view>
 						<view class="businessList">
-							<view class="businessListTxt">其他2</view>
-							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
+							<view class="businessListTxt">关于我们</view>
 						</view>
 					</view>
 					<!--其他-->
 					
 					<!--其他-->
-					<view class="meOverBg">
+					<!-- <view class="meOverBg">
 						<view class="businessList">
 							<view class="businessListTxt"><image src="../../static/icon/meIcon_01.png"></image>其他1</view>
 							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
@@ -76,7 +74,7 @@
 							<view class="businessListTxt"><image src="../../static/icon/meIcon_01.png"></image>其他2</view>
 							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
 						</view>
-					</view>
+					</view> -->
 					<!--其他-->
 					
 				</view>
@@ -132,7 +130,7 @@
 	}
 </script>
 
-<style>
+<style >
 	page{ background: #F5F5F5; }
 	.meMain{ width: 100%;position: relative; }
 	.meMain>image{ width: 100%;height: 220upx;display: block; }

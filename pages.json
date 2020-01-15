@@ -5,7 +5,14 @@
 		    "style" : {
 		    	"navigationBarTitleText" : "首页",
 		    	"app-plus": {
-		    		"bounce": "none"
+		    		"titleNView": {
+		    		                "buttons": [
+		    		                    {
+		    		                        "type":"menu",
+		    		                        "float": "right"
+		    		                    }
+		    		                ]
+		    		}
 		    	}
 		    }
 		}
@@ -24,6 +31,7 @@
 		    "style" : {
 				"navigationBarTitleText" : "详情",
 				"app-plus": {
+					"titleNView": true,
 					"navigationBarTextStyle": "white",
 					"bounce": "none"
 				}
@@ -32,9 +40,9 @@
 		{
 		    "path" : "pages/details/videoDetails",
 		    "style" : {
-				"navigationBarTitleText" : "",
+				"navigationBarTitleText" : "详情",
 				"app-plus": {
-					"titleNView": false,
+					"titleNView": true,
 					"navigationBarTextStyle": "white",
 					"bounce": "none"
 				}
@@ -82,12 +90,10 @@
 		,{
 		    "path" : "pages/shilu-login/login",
 		    "style" : {
-		    	"navigationBarTitleText" : "首页",
+		    	"navigationBarTitleText" : "登录",
 		    	"app-plus": {
-		    		// #ifdef APP-PLUS
-		    		"titleNView": false,
+		    		"titleNView": true,
 		    		"navigationBarTextStyle": "white",
-		    		// #endif
 		    		"bounce": "none"
 		    	}
 		    }
@@ -95,12 +101,10 @@
 		{
 		    "path" : "pages/shilu-login/reg",
 		    "style" : {
-		    	"navigationBarTitleText" : "首页",
+		    	"navigationBarTitleText" : "注册",
 		    	"app-plus": {
-		    		// #ifdef APP-PLUS
-		    		"titleNView": false,
+		    		"titleNView": true,
 		    		"navigationBarTextStyle": "white",
-		    		// #endif
 		    		"bounce": "none"
 		    	}
 		    }
@@ -150,36 +154,52 @@
 				"navigationBarTextStyle":"white"
 			}
 		}
+        ,{
+            "path" : "pages/index/publish/publish",
+            "style" : {
+				"navigationBarTitleText": "发布帖子",
+				"navigationBarBackgroundColor":"#3B7ED5",
+				"navigationBarTextStyle":"white"
+			}
+        }
+        ,{
+            "path" : "pages/me/personal",
+            "style" : {
+				"titleNView": false,
+            	"navigationBarBackgroundColor":"#3B7ED5",
+            	"navigationBarTextStyle":"white"
+            }
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "新闻模版",
-		"navigationBarBackgroundColor": "#ec706b",
+		"navigationBarBackgroundColor": "#3B7ED5",
 		"backgroundColor": "#f8f8f8"
 	},
 	"tabBar" : {
 	    "color" : "#C0C4CC",
-	    "selectedColor" : "#fa436a",
+	    "selectedColor" : "#3B7ED5",
 	    "borderStyle" : "black",
 	    "backgroundColor" : "#ffffff",
 	    "list" : [
 	        {
 	            "pagePath" : "pages/index/index",
-	            "iconPath" : "static/tab-home.png",
-	            "selectedIconPath" : "static/tab-home-current.png",
-	            "text" : "首页"
+	            "iconPath" : "static/tab-house.png",
+	            "selectedIconPath" : "static/tab-house-current.png",
+	            "text" : "友趣"
 	        },
 			{
 			    "pagePath" : "pages/netty/chat/chat/main_chat",
-			    "iconPath" : "static/tab-home.png",
-			    "selectedIconPath" : "static/tab-home-current.png",
-			    "text" : "信息中心"
+			    "iconPath" : "static/tab-chat.png",
+			    "selectedIconPath" : "static/tab-chat-current.png",
+			    "text" : "信息"
 			},
 			 {
 			    "pagePath" : "pages/me/me",
-			    "iconPath" : "static/tab-home.png",
-			    "selectedIconPath" : "static/tab-home-current.png",
-			    "text" : "个人中心"
+			    "iconPath" : "static/tab-my.png",
+			    "selectedIconPath" : "static/tab-my-current.png",
+			    "text" : "我的"
 			}
 	    ]
 	},

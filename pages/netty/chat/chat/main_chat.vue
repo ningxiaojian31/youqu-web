@@ -29,12 +29,12 @@
 			</view>
 			</block>
 			<block v-else>
-				<view class="emptyData">还没消息，快去找人聊聊吧</view>
+				<view class="emptyData">暂无私信消息</view>
 			</block>
 			
 			
 		</view>
-		<mt-footer tab="index"></mt-footer>
+		
 	</view>
 </template>
 

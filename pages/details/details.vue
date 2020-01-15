@@ -18,10 +18,10 @@
 							<text class="yticon icon-dianzan-ash"></text>
 							<text>75</text>
 						</view>
-						<view class="action-item">
+						<!-- <view class="action-item">
 							<text class="yticon icon-dianzan-ash reverse"></text>
 							<text>6</text>
-						</view>
+						</view> -->
 						<view class="action-item">
 							<text class="yticon icon-fenxiang2"></text>
 							<text>分享</text>
@@ -35,7 +35,7 @@
 				
 				<view class="container" v-show="loading === false">
 					<!-- 推荐 -->
-					<view class="s-header">
+					<!-- <view class="s-header">
 						<text class="tit">相关推荐</text>
 					</view>
 					<view class="rec-section" v-for="item in newsList" :key="item.id">
@@ -51,7 +51,7 @@
 								<image class="img" :src="item.images[0]" mode="aspectFill"></image>
 							</view>
 						</view>
-					</view>
+					</view> -->
 					
 					<!-- 评论 -->
 					<view class="s-header">
@@ -81,15 +81,14 @@
 		
 		<view class="bottom">
 			<view class="input-box">
-				<text class="yticon icon-huifu"></text>
 				<input 
 					class="input"
 					type="text" 
-					placeholder="点评一下把.." 
+					placeholder="评论一下吧"
 					placeholder-style="color:#adb1b9;"
 				/>
 			</view>
-			<text class="confirm-btn">提交</text>
+			<text class="confirm-btn">发表</text>
 		</view>
 	</view>
 </template>
@@ -139,7 +138,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 	page{
 		height: 100%;
 	}
@@ -181,7 +180,7 @@
 			margin-bottom: 16upx;
 		}
 		.introduce{
-			display: flex;
+			display: block;
 			font-size: 26upx;
 			color: #909399;
 			text{
@@ -192,6 +191,7 @@
 	/* 点赞等操作 */
 	.actions{
 		display: flex;
+		flex-direction: row;
 		justify-content: space-around;
 		align-items: center;
 		line-height: 1.3;
@@ -199,6 +199,7 @@
 	
 		.action-item{
 			display: flex;
+			flex-direction: row;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
@@ -206,7 +207,7 @@
 			color: #999;
 		}
 		.yticon{
-			display: flex;
+			display: block;
 			align-items: center;
 			justify-content: center;
 			width: 60upx;
@@ -230,13 +231,17 @@
 			font-size: 44upx;
 		}
 	}
-
+	
+	
 	.s-header{
+		display: flex;
+		flex-direction: column;
 		padding: 20upx 30upx;
 		font-size: 30upx;
 		color: #303133;
 		background: #fff;
 		margin-top: 16upx;
+		
 		
 		&:before{
 			content: '';
@@ -246,72 +251,18 @@
 			border-left: 6upx solid #ec706b;
 		}
 	}
-	/* 推荐列表 */
-	.rec-section{
-		background-color: #fff;
-		.rec-item{
-			display: flex;
-			padding: 20upx 30upx;
-			position: relative;
-			&:after{
-				content: '';
-				position: absolute;
-				left: 30upx;
-				right: 0;
-				bottom: 0;
-				height: 0;
-				border-bottom: 1px solid #eee;
-				transform: scaleY(50%);
-			}
-		}
-		.left{
-			flex: 1;
-			padding-right: 10upx;
-			overflow: hidden;
-			position: relative;
-			padding-bottom: 52upx;
-			.title{
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-line-clamp: 2;
-				overflow: hidden;
-				font-size: 32upx;
-				color: #303133;
-				line-height: 44upx;
-			}
-			.bot{
-				position: absolute;
-				left: 0;
-				bottom: 4upx;
-				font-size: 26upx;
-				color: #909399;
-			}
-			.time{
-				margin-left: 20upx;
-			}
-		}
-		.right{
-			width: 220upx;
-			height: 140upx;
-			flex-shrink: 0;
-			position: relative;
-			.img{
-				width: 100%;
-				height: 100%;
-			}
-			
-		}
-	}
+
+	
 	/* 评论 */
 	.evalution{
-		display:flex;
+		display:block;
 		flex-direction:column;
 		background: #fff;
 		padding: 20upx 0;
 	}
 	
 	.eva-item{
-		display:flex;
+		display:block;
 		padding: 20upx 30upx;
 		position: relative;
 		image{
@@ -336,14 +287,14 @@
 		}
 	}
 	.eva-right{
-		display:flex;
+		display:block;
 		flex-direction:column;
 		flex: 1;
 		font-size: 26upx;
 		color: #909399;
 		position:relative;
 		.zan-box{
-			display:flex;
+			display:block;
 			align-items:base-line;
 			position:absolute;
 			top: 10upx;
@@ -363,6 +314,7 @@
 	.bottom{
 		flex-shrink: 0;
 		display: flex;
+		flex-direction: row;
 		align-items: center;
 		height: 90upx;
 		padding: 0 30upx;
@@ -372,19 +324,22 @@
 		
 		.input-box{
 			display: flex;
+			flex-direction: column;
 			align-items: center;
 			flex: 1;
 			height: 60upx;
 			background: #f2f3f3;
 			border-radius: 100px;
-			padding-left: 30upx;
+			padding-left: 10upx;
 			
 			.icon-huifu{
+				margin-top: 20upx;
 				font-size: 28upx;
 				color: #909399;
 			}
 			.input{
-				padding: 0 20upx;
+				width: 85%;
+				margin: 10upx 10upx 0upx 0upx;
 				font-size: 28upx;
 				color: #303133;
 			}

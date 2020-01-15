@@ -538,7 +538,7 @@
 	}
 </script>
 
-<style>
+<style >
 	.scroll-list {
 		width: 100%;
 		box-sizing: border-box;

@@ -90,7 +90,7 @@
 	}
 </script>
 
-<style>
+<style >
 	page, .content{
 		background-color: #f8f8f8;
 	}

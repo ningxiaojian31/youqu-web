@@ -22,10 +22,10 @@
 							<text class="yticon icon-dianzan-ash"></text>
 							<text>75</text>
 						</view>
-						<view class="action-item">
+						<!-- <view class="action-item">
 							<text class="yticon icon-dianzan-ash reverse"></text>
 							<text>6</text>
-						</view>
+						</view> -->
 						<view class="action-item">
 							<text class="yticon icon-fenxiang2"></text>
 							<text>分享</text>
@@ -38,28 +38,6 @@
 				</view>
 				
 				<view class="container" v-show="loading === false">
-					<!-- 推荐 -->
-					<view class="s-header">
-						<text class="tit">相关推荐</text>
-					</view>
-					<view class="rec-section" v-for="item in newsList" :key="item.id">
-						<view class="rec-item" @click="redirectToDetail">
-							<view class="left">
-								<text class="title">{{item.title}}</text>
-								<view class="bot">
-									<text class="author">{{item.author}}</text>
-									<text class="time">{{item.time}}</text>
-								</view>
-							</view>
-							<view class="right">
-								<image class="img" :src="item.images[0]" mode="aspectFill"></image>
-								<view class="video-tip">
-									<image class="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEC0lEQVRoQ+2ajVEVMRDHdzuwA6ACpQKxArECtQKxAqECoQKhAqECoQKxAqEDrWCdn7Nx8vJy+bp3T4YhM2+O8S7J/rO7//2IKo9k6CPBIU9Acpo0s10ReSkiPA8mtH0tIncicqOqPDcyZmvEhX8rIu8cQI9gtyJyKSIXc0ENA3EAnxxAj/BT356LyEdV/TWyWDcQM3smIgA4mtjwXkQ4aX4Mngj3QkSYy5PfTmb+laoeLg7EzBDga8aEEB4TOVfVAKAoj2sUc+QXQC0PxMzY8Esi3W8ROVbV05FTDHPMDC1AEBzEcqY1AeLMQQxtXANuZvjMa/cb/i6Oqo9kQKCFI1WtLl7bfOq9mUHd3/w9ND1F5f+WKAJxn/gebQiIg1Y/mAEEUsDX8J0zVZ0iljoQZydAYLuMrYCIwXOQrYc2qREzw4E/RAu/X9KcRrUX5mWBODX+jBY/UdXjuZuNznd5PnscepNjtikgODJpRzCp3VFaHBU+MTEOkSDMIJ0hFKyMNSAZbZA2NMUJn7ujqjebABDWyDDnXpqb5YDEvnGvqsHZi7I5CMgBxiHDxRx5bmSYGZlyyADWmCwHBN8IwjdRH5Im3B+En5UIJuYFBeMnjFtV3Y/frwDJmNV+K/1NAGEvIv+pqp7MUU1GthXzSoHE+VSzWRU0EsuOaUDhw+aWmNdKOEiBxOzQlYkWNJIqAiAI0V0dmhkZNvkXYyUkpEDYhFJ17cOaWXQACUtxaPhgc9JpZvFBr+Rg/xNI8B+0w0lXR0LDzUCIoE0bNPpISdC1uJD7uJQVlzTyEIFQgFGhMpo10pVfDfgIwlAiU9s0af4h+gglARkE8WURZ98G/V65Fhal3zgg3qnqXpVK/IMG0/rhAOYExDh9KgZEcqy4DtlEirKpTgutqLjsnk5RnEaLWeaUhiY0srFOS1KxrqVPtTS+2by8xsdsnkONNN5G0pDCQcVmtcaoLYVVV63e0zDo8L+0OVgvrNy84lIXemRiM022CtjynWsabVCwMdpKXQeSOlZXcGwRsPWbJAgyLZvOPOh2UKZWn6xYS0Dibl/IVF+1VoytJ15wbqyCtmkwKdIZGnZZE+9tmbLI4mC8VRuDAG8xpo00sQFDi2iRJrabU2jGBYVVmbMKxJ0/dzfSXeGVzM3ZiRZt2tGsgmDdJiAFMGiHNPxijk+YGV1NsuHgD82aCB82A4lomdohvf8jrQm3s61XbzgzAMJtVXwWOPZhD7F0AXEwnBrqjzv1sRCACnfp/HvIdsNlTbiDn+pgDuVn3UCCxN4wA1Bods+xrr8R26/yuuuULh8p8D0nSzsTE8ldOZcAhttgKsUhAEM+Ujty1xIm1PJfOK7nCh/LM2xaNVDbfv8EZNsnXtvvDyrmF1FIBKIwAAAAAElFTkSuQmCC"></image>
-								</view>
-							</view>
-						</view>
-					</view>
-					
 					<!-- 评论 -->
 					<view class="s-header">
 						<text class="tit">网友评论</text>
@@ -88,15 +66,14 @@
 		
 		<view class="bottom">
 			<view class="input-box">
-				<text class="yticon icon-huifu"></text>
 				<input 
 					class="input"
 					type="text" 
-					placeholder="点评一下把.." 
+					placeholder="评论一下吧" 
 					placeholder-style="color:#adb1b9;"
 				/>
 			</view>
-			<text class="confirm-btn">提交</text>
+			<text class="confirm-btn">发表</text>
 		</view>
 	</view>
 </template>
@@ -151,7 +128,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 	page{
 		height: 100%;
 	}
@@ -206,22 +183,23 @@
 	/* 点赞等操作 */
 	.actions{
 		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
 		align-items: center;
 		line-height: 1.3;
-		padding-right: 44upx;
-		padding-top: 16upx;
+		padding: 10upx 40upx 20upx;
 	
 		.action-item{
 			display: flex;
+			flex-direction: row;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			margin-right: 60upx;
 			font-size: 24upx;
 			color: #999;
 		}
 		.yticon{
-			display: flex;
+			display: block;
 			align-items: center;
 			justify-content: center;
 			width: 60upx;
@@ -263,75 +241,7 @@
 			border-left: 6upx solid #ec706b;
 		}
 	}
-	/* 推荐列表 */
-	.rec-section{
-		background-color: #fff;
-		.rec-item{
-			display: flex;
-			padding: 20upx 30upx;
-			position: relative;
-			&:after{
-				content: '';
-				position: absolute;
-				left: 30upx;
-				right: 0;
-				bottom: 0;
-				height: 0;
-				border-bottom: 1px solid #eee;
-				transform: scaleY(50%);
-			}
-		}
-		.left{
-			flex: 1;
-			padding-right: 10upx;
-			overflow: hidden;
-			position: relative;
-			.title{
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-line-clamp: 2;
-				overflow: hidden;
-				font-size: 32upx;
-				color: #303133;
-				line-height: 44upx;
-			}
-			.bot{
-				position: absolute;
-				left: 0;
-				bottom: 4upx;
-				font-size: 26upx;
-				color: #909399;
-			}
-			.time{
-				margin-left: 20upx;
-			}
-		}
-		.right{
-			width: 220upx;
-			height: 140upx;
-			flex-shrink: 0;
-			position: relative;
-			.img{
-				width: 100%;
-				height: 100%;
-			}
-			.video-tip{
-				position: absolute;
-				left: 0;
-				top: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0,0,0,.3);
-				image{
-					width: 60upx;
-					height:60upx; 
-				}
-			}
-		}
-	}
+	
 	/* 评论 */
 	.evalution{
 		display:flex;
@@ -393,6 +303,7 @@
 	.bottom{
 		flex-shrink: 0;
 		display: flex;
+		flex-direction: row;
 		align-items: center;
 		height: 90upx;
 		padding: 0 30upx;
@@ -402,19 +313,22 @@
 		
 		.input-box{
 			display: flex;
+			flex-direction: column;
 			align-items: center;
 			flex: 1;
 			height: 60upx;
 			background: #f2f3f3;
 			border-radius: 100px;
-			padding-left: 30upx;
+			padding-left: 10upx;
 			
 			.icon-huifu{
+				margin-top: 20upx;
 				font-size: 28upx;
 				color: #909399;
 			}
 			.input{
-				padding: 0 20upx;
+				width: 85%;
+				margin: 10upx 10upx 0upx 0upx;
 				font-size: 28upx;
 				color: #303133;
 			}

@@ -6,34 +6,32 @@
 		
 		<view class="list">
 			<view class="list-call">
-				<image class="img" src="/static/shilu-login/1.png"></image>
-				<input class="biaoti" v-model="phoneno" type="number" maxlength="11" placeholder="手机号" />
+				<image class="img" src="/static/shilu-login/email.png"></image>
+				<input class="biaoti" v-model="username" type="text" placeholder="登录邮箱" />
 			</view>
 			<view class="list-call">
-				<image class="img" src="/static/shilu-login/2.png"></image>
+				<image class="img" src="/static/shilu-login/password.png"></image>
 				<input class="biaoti" v-model="password" type="text" maxlength="32" placeholder="登录密码" :password="!showPassword" />
 				<image class="img" :src="showPassword?'/static/shilu-login/op.png':'/static/shilu-login/cl.png'" @tap="display"></image>
 			</view>
 			<view class="list-call">
-				<image class="img" src="/static/shilu-login/3.png"></image>
+				<image class="img" src="/static/shilu-login/check.png"></image>
 				<input class="biaoti" v-model="code" type="number" maxlength="4" placeholder="验证码" />
 				<view class="yzm" :class="{ yzms: second>0 }" @tap="getcode">{{yanzhengma}}</view>
 			</view>
-			<view class="list-call">
+			<!-- <view class="list-call">
 				<image class="img" src="/static/shilu-login/4.png"></image>
 				<input class="biaoti" v-model="invitation" type="text" maxlength="12" placeholder="邀请码" />
 			</view>
-			
+			 -->
 		</view>
 		
 		<view class="dlbutton" hover-class="dlbutton-hover" @tap="bindLogin">
-			<text>注册</text>
+			<text class="reg-btn">注册</text>
 		</view>
 		
 		<view class="xieyi">
-			<image @tap="xieyitong" :src="xieyi==true?'/static/shilu-login/ty1.png':'/static/shilu-login/ty0.png'"></image>
-			<text @tap="xieyitong"> 同意</text>
-			<navigator url="blog?id=1" open-type="navigate">《软件用户协议》</navigator>
+			<navigator  open-type="navigate">注册即表明同意《软件用户协议》</navigator>
 		</view>
 	</view>
 </template>
@@ -51,7 +49,7 @@
 		},
 		data() {
 			return {
-				phoneno:'',
+				username:'',
 				password:'',
 				code:'',
 				invitation:'',
@@ -161,7 +159,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	.content {
 		display: flex;
 		flex-direction: column;
@@ -186,7 +184,7 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		padding-top: 50upx;
+		padding-top: 130upx;
 		padding-left: 70upx;
 		padding-right: 70upx;
 	}
@@ -200,25 +198,25 @@
 		border-bottom: 1upx solid rgba(230,230,230,1);
 	}
 	.list-call .img{
-		width: 40upx;
-		height: 40upx;
+		width: 33upx;
+		height: 33upx;
 	}
 	.list-call .biaoti{
 		flex: 1;
 		text-align: left;
 		font-size: 32upx;
 		line-height: 100upx;
-		margin-left: 16upx;
+		margin-left: 25upx;
 	}
 	.yzm {
-		color: #FF7D13;
+		color: #3B7ED5;
 		font-size: 24upx;
 		line-height: 64upx;
 		padding-left: 10upx;
 		padding-right: 10upx;
 		width:auto;
 		height:64upx;
-		border:1upx solid #FFA800;
+		border:1upx solid #3B7ED5;
 		border-radius: 50upx;
 	}
 	.yzms {
@@ -230,7 +228,7 @@
 		font-size: 34upx;
 		width:470upx;
 		height:100upx;
-		background:linear-gradient(-90deg,rgba(63,205,235,1),rgba(188,226,158,1));
+		background:#3B7ED5;
 		box-shadow:0upx 0upx 13upx 0upx rgba(164,217,228,0.2);
 		border-radius:50upx;
 		line-height: 100upx;
@@ -239,23 +237,23 @@
 		margin-right: auto;
 		margin-top: 100upx;
 	}
+	.reg-btn{
+		margin: 23upx;
+	}
 	.dlbutton-hover {
-		background:linear-gradient(-90deg,rgba(63,205,235,0.9),rgba(188,226,158,0.9));
+		background:#6B7EDD;
 	}
 	.xieyi{
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
-		font-size: 30upx;
-		margin-top: 80upx;
-		color: #FFA800;
+		font-size: 26upx;
+		margin-top: 50upx;
+		color: #3B7ED5;
 		text-align: center;
-		height: 40upx;
-		line-height: 40upx;
+		height: 30upx;
+		line-height: 30upx;
 	}
-	.xieyi image{
-		width: 40upx;
-		height: 40upx;
-	}
+	
 </style>

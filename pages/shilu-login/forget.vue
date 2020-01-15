@@ -132,7 +132,7 @@
 	}
 </script>
 
-<style>
+<style >
 	.content {
 		display: flex;
 		flex-direction: column;

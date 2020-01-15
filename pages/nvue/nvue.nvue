@@ -137,7 +137,7 @@
 	}
 </script>
 
-<style>
+<style >
 	/* 字体图标 */
 	.yticon {
 		font-family: yticon;
