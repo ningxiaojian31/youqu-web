@@ -13,7 +13,8 @@
     "pages/chat/chat",
     "pages/netty/chat/chat/chat",
     "pages/netty/chat/chat/main_chat",
-    "pages/index/publish/publish"
+    "pages/index/publish/publish",
+    "pages/me/personal"
   ],
   "window": {
     "navigationBarTextStyle": "white",

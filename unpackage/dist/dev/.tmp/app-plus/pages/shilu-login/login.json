@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "首页",
-  "titleNView": false,
+  "navigationBarTitleText": "登录",
+  "titleNView": true,
   "navigationBarTextStyle": "white",
   "bounce": "none",
   "usingComponents": {}

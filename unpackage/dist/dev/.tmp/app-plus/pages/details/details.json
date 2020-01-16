@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "详情",
+  "titleNView": true,
   "navigationBarTextStyle": "white",
   "bounce": "none",
   "usingComponents": {

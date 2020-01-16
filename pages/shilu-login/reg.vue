@@ -16,7 +16,7 @@
 			</view>
 			<view class="list-call">
 				<image class="img" src="/static/shilu-login/check.png"></image>
-				<input class="biaoti" v-model="code" type="number" maxlength="4" placeholder="验证码" />
+				<input class="biaoti" v-model="msgCode" type="number" maxlength="4" placeholder="验证码" />
 				<view class="yzm" :class="{ yzms: second>0 }" @tap="getcode">{{yanzhengma}}</view>
 			</view>
 			<!-- <view class="list-call">
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+	import common from "@/common/common.js";
 	var tha,js;
 	export default {
 		onLoad(){
@@ -51,7 +52,7 @@
 			return {
 				username:'',
 				password:'',
-				code:'',
+				msgCode:'',
 				invitation:'',
 				xieyi:true,
 				showPassword:false,
@@ -83,76 +84,75 @@
 					return;
 				}
 				this.second = 60;
-				uni.request({
-				    url: 'http://***/getcode.html', //仅为示例，并非真实接口地址。
-				    data: {phoneno:this.phoneno,code_type:'reg'},
-					method: 'POST',
-					dataType:'json',
-				    success: (res) => {
-						if(res.data.code!=200){
-							uni.showToast({title:res.data.msg,icon:'none'});
-						}else{
-							uni.showToast({title:res.data.msg});
-							js = setInterval(function(){
-								tha.second--;
-								if(tha.second==0){
-									clearInterval(js)
-								}
-							},1000)
-						}
-				    }
+				
+				var reqData = {
+					username: this.username,
+					password: this.password
+				}
+				
+				var url = common.apiHost+'/user/tUser/send';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+				  uni.showToast({
+				    title:data.data.data,
+				  	duration:2000
+				  })
+				  
+				}).catch((err) => {
+				   uni.showToast({
+				     title:"服务器异常...稍后再试",
+				   	 duration:2000
+				   })
 				});
+				
 			},
 		    bindLogin() {
-				if (this.xieyi == false) {
+				
+				if (this.msgCode.length != 4) {
 				    uni.showToast({
-				        icon: 'none',
-				        title: '请先阅读《软件用户协议》'
+				        title: '验证码长度为四位'
 				    });
 				    return;
 				}
-				if (this.phoneno.length !=11) {
-				    uni.showToast({
-				        icon: 'none',
-				        title: '手机号不正确'
-				    });
-				    return;
+				
+				var reqData = {
+					username: this.username,
+					password: this.password,
+					msgCode: this.msgCode
 				}
-		        if (this.password.length < 6) {
-		            uni.showToast({
-		                icon: 'none',
-		                title: '密码不正确'
-		            });
-		            return;
-		        }
-				if (this.code.length != 4) {
-				    uni.showToast({
-				        icon: 'none',
-				        title: '验证码不正确'
-				    });
-				    return;
-				}
-				uni.request({
-				    url: 'http://***/reg.html',
-				    data: {
-						phoneno:this.phoneno,
-						password:this.password,
-						code:this.code,
-						invitation:this.invitation
-					},
-					method: 'POST',
-					dataType:'json',
-				    success: (res) => {
-						if(res.data.code!=200){
-							uni.showToast({title:res.data.msg,icon:'none'});
-						}else{
-							uni.showToast({title:res.data.msg});
-							setTimeout(function(){
-								uni.navigateBack();
-							},1500) 
-						}
-				    }
+				
+				var url = common.apiHost+'/user/tUser/register';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+				  if(data.data.code === 1){
+					  //注册成功
+					  uni.navigateTo({
+					  	url: "../me/me"
+					  });
+					  //保存登录信息
+					  uni.setStorage({
+					  	key:"user",
+						data:data.data.data
+					  })
+					  
+					  uni.showToast({
+					    title:data.data.msg,
+					  	duration:2000
+					  })
+				  }else{
+					  uni.showToast({
+					    title:data.data.data,
+					  	duration:2000
+					  })
+				  }
+				  
+				}).catch((err) => {
+				   uni.showToast({
+				     title:"服务器异常...稍后再试",
+				   	 duration:2000
+				   })
 				});
+	
 				
 		    }
 		}

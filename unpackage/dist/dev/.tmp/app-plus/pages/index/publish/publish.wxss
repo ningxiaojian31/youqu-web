@@ -693,10 +693,7 @@ button.cuIcon.lg.data-v-6215f172 {
 	display: block;
 }
 .cu-btn.block.data-v-6215f172 {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display: flex;
+	display: block;
 }
 .cu-btn[disabled].data-v-6215f172 {
 	opacity: 0.6;
@@ -4764,5 +4761,11 @@ scroll-view.cu-steps .cu-item.data-v-6215f172 {
 }
 .cuIcon-btn.data-v-6215f172:before {
 	content: "\E601";
+}
+.text-black.data-v-6215f172 {
+  display: block;
+}
+.cu-bar.data-v-6215f172 {
+  display: block;
 }
 

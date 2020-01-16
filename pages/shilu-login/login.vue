@@ -29,6 +29,7 @@
 </template>
 
 <script>
+	import common from "@/common/common.js";
 	var tha;
 	import {mapMutations} from 'vuex';
 	export default {
@@ -44,24 +45,44 @@
 		methods: {
 			...mapMutations(['login']),
 		    bindLogin() {
-				uni.request({
-				    url: 'http://***/login.html',
-				    data: {
-						username:this.username,
-						password:this.password
-					},
-					method: 'POST',
-					dataType:'json',
-				    success: (res) => {
-						if(res.data.code!=200){
-							uni.showToast({title:res.data.msg,icon:'none'});
-						}else{
-							uni.setStorageSync('user_data', JSON.stringify(res.data.data));
-							this.login();
-							uni.navigateBack();
-						}
-				    }
+				
+				var reqData = {
+					username: this.username,
+					password: this.password
+				}
+				
+				var url = common.apiHost+'/user/tUser/login';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+				  if(data.data.code === 1){
+					  //登录成功
+					  uni.navigateTo({
+					  	url: "../me/me"
+					  });
+					  //保存登录信息
+					  uni.setStorage({
+					  	key:"user",
+						data:data.data.data
+					  })
+					  
+					  uni.showToast({
+					    title:data.data.msg,
+					  	duration:2000
+					  })
+				  }else{
+					  uni.showToast({
+					    title:data.data.data,
+					  	duration:2000
+					  })
+				  }
+				  
+				}).catch((err) => {
+				   uni.showToast({
+				     title:"服务器异常...稍后再试",
+				   	 duration:2000
+				   })
 				});
+				
 				
 		    }
 		}
