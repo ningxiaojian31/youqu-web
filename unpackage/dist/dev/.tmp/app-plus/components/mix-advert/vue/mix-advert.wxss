@@ -8,7 +8,6 @@
 	z-index: 9999;
 	-webkit-transition: opacity 1s, -webkit-transform .6s;
 	transition: opacity 1s, -webkit-transform .6s;
-	-o-transition: transform .6s, opacity 1s;
 	transition: transform .6s, opacity 1s;
 	transition: transform .6s, opacity 1s, -webkit-transform .6s;
 	opacity: 1;
@@ -19,12 +18,10 @@
 .hide{
 	opacity: 0;
 	-webkit-transform: scale(1.2);
-	    -ms-transform: scale(1.2);
 	        transform: scale(1.2);
 }
 .hide .cate-content{
 	-webkit-transform: translateX(0);
-	    -ms-transform: translateX(0);
 	        transform: translateX(0);
 }
 .mix-advert-bg{
@@ -37,15 +34,12 @@
 .mix-advert-btn{
 	display: -webkit-box;
 	display: -webkit-flex;
-	display: -ms-flexbox;
 	display: flex;
 	-webkit-box-pack: center;
 	-webkit-justify-content: center;
-	    -ms-flex-pack: center;
 	        justify-content: center;
 	-webkit-box-align: center;
 	-webkit-align-items: center;
-	    -ms-flex-align: center;
 	        align-items: center;
 	position: absolute;
 	right: 30rpx;

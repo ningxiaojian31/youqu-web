@@ -2,21 +2,29 @@
 	<view>
 		<view id="main">
 			<view class="pd-10 bg-fff">
-
 				<template v-if="list.length>0">
-					<view v-for="(item,index) in list" :key="time+'.'+item.id">
-						<view class="chatbox" v-if="item.userid==1">
+				<view class="content" id="content" :style="{height: style.contentViewHeight + 'px'}">
+			     <scroll-view id="scrollview" class="chat-window" scroll-y="true" :style="{height: style.contentViewHeight + 'px'}" :scroll-with-animation="false" :scroll-top="scrollTop">
+					<view v-for="(item,index) in list" :key="time+'.'+item.id" class="m-item">
+						<view class="chatbox" v-if="item.userid==userId">
 							<view class="flex-1" :a="index"></view>
 							<view class="chatbox-desc-b mgb-5 mgr-5">
 								<chat-msg :content="item.message"></chat-msg>
 							</view>
 							
-							<image :src="item.user_head+'.100x100.jpg'" class="wh-40 mgr-10 bd-radius-10"></image>
+							<image v-if="myImage == null || myImage == ''" class="wh-40 mgr-10 bd-radius-10" src="../../../../static/chatImage.png" ></image>
+							<image v-if="myImage != null && myImage != ''" class="wh-40 mgr-10 bd-radius-10" :src="myImage"></image>
+							
+							<!-- <image :src="myImage" class="wh-40 mgr-10 bd-radius-10"></image> -->
 						</view>
 						<view class="chatbox" v-else>
-							<image :src="item.user_head+'.100x100.jpg'" class="wh-40 mgr-10 bd-radius-10"></image>
-							<view class="flex-1">
-								<view class="chatbox-nick-a mgb-5">{{item.userid}}</view>
+							
+							<image @click="toPersonal()" v-if="chatData.image == null || chatData.image == ''" class="wh-40 mgr-10 bd-radius-10" src="../../../../static/chatImage.png" ></image>
+							<image @click="toPersonal()" v-if="chatData.image != null && chatData.image != ''" class="wh-40 mgr-10 bd-radius-10" :src="chatData.image"></image>
+							
+							<view class="flex-1" :a="index">
+								<view v-if="chatData.nickname == null || chatData.nickname == ''" class="chatbox-nick-a mgb-5">{{item.userid}}</view>
+								<view v-if="chatData.nickname != null && chatData.nickname != ''" class="chatbox-nick-a mgb-5">{{chatData.nickname}}</view>
 								<view class="chatbox-desc-a">
 									<chat-msg :content="item.message"></chat-msg>
 								</view>
@@ -24,6 +32,8 @@
 						</view>
 
 					</view>
+				  </scroll-view>
+				   </view>
 				</template>
 				<template v-else>
 					<view class="emptyData">暂无消息</view>
@@ -33,11 +43,11 @@
 			<view class="fixFoot-row"></view>
 			<view class="fixFoot bg-fff pdb-5">
 				<view class="input-flex">
-					<input class="input-flex-text" v-model="content" type="text">
+					<input id="con" class="input-flex-text" v-model="content" type="text">
 					<view class="input-flex-btn w60" @click="send('content')">发送</view>
 				</view>
 				<view class="flex flex-center">
-					<!-- #ifndef H5 -->
+					<!-- #ifndef H5-->
 					<view @click="aRecordClass='flex-col'" class="flex-1 iconfont icon-voicefill f20"></view>
 					<!-- #endif -->
 					<view @click="choiceImg('pic')" class="flex-1 iconfont icon-pic f20 sendPic"></view>
@@ -123,9 +133,32 @@
 				emoClass: "",
 				aRecordClass: "",
 				aRecordIng: false,
-				time:0
+				time:0,
+				token: '',
+				userId:0, //本地登录信息
+				chatData: {
+					userid: '',
+					friendid: '',
+					nickname: '',
+					image: ''
+				} ,//聊天记录信息
+				myImage: '',
+				// 聊天页面时时滚动样式
+				style: {
+				    pageHeight: 0,
+				    contentViewHeight: 0,
+				    footViewHeight: 90,
+				    mitemHeight: 0
+				},
 			}
+			
 		},
+		created: function() {
+		　　　const res = uni.getSystemInfoSync();   //获取手机可使用窗口高度     api为获取系统信息同步接口
+		　　　this.style.pageHeight = res.windowHeight;
+		　　　this.style.contentViewHeight = res.windowHeight - uni.getSystemInfoSync().screenWidth / 750 * (100) - 70; //像素   因为给出的是像素高度 然后我们用的是upx  所以换算一下 
+		　　　this.scrollToBottom();   //创建后调用回到底部方法
+		},　
 		onPageScroll:function(e){
 			if(e.scrollTop==0 && !inAjax){
 				this.getList();
@@ -135,22 +168,43 @@
 				},2000);
 			}
 		},
-		onLoad: function() {
-			
+		onLoad: function(options) {
+			var that = this;
+			//接受页面传值
+			 that.chatData = {
+				 userid: options.userid,
+				 friendid: options.friendid,
+				 nickname: options.nickname,
+				 image: options.image
+			 } // 字符串转对象
+			 console.log("页面跳转成功==="+JSON.stringify(that.chatData));
+			 //获取当前登录人信息
+			 uni.getStorage({  //携带token
+			     key: 'user',  
+			     success: function(ress) {
+					that.token = ress.data.token;
+					that.userId = ress.data.id;
+					that.myImage = ress.data.image;
+			     }
+			 });
+			 //未登录，跳转到登录页面
+			 if(that.token == null || that.token == ''){
+			 	uni.navigateTo({
+			 		url: "/pages/shilu-login/login"
+			 	});
+			 };
+			 console.log("加载中---");
 			//加载聊天记录
 			this.initList();
+			
 			//更新聊天信息
 			this.revMessage();
 			
 			
-			var sys=uni.getSystemInfoSync()
+			var sys=uni.getSystemInfoSync();
 			windowHeight=sys.windowHeight;	
-			var that = this;
 			this.emoList = emo.emoList();
-			groupid=ops.groupid;
-			this.getPage();
-		
-		
+			
 			//#ifndef H5
 			audioRecord = wx.getRecorderManager();
 
@@ -201,6 +255,11 @@
 				that.scrollTop = 0;
 				this.getList();
 			},
+			toPersonal(){
+				uni.navigateTo({
+					url:'../../../me/personal'
+				});
+			},
 			//更新聊天信息
 			revMessage:function(){
 				var that = this;
@@ -209,18 +268,23 @@
 					console.log("收到服务器内容：" + res.data);
 					//更新
 					console.log("更新消息成功=========");
-					that.list.push(res.data.chatRecord); 
+					var record = JSON.parse(res.data);
+					that.list.push(record.chatRecord); 
+					//滑到底部
+					that.scrollToBottom();  
 				});
 			},
 			//加载聊天记录
-			initList:function(){
-				var url = common.apiHost+'/chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888';
+			initList:function(reqData){
+				var url = common.apiHost+'/chat/chatrecord/findByUserIdAndFriendId?userid='+this.chatData.userid+'&friendid='+this.chatData.friendid;
 				var method = "GET";
 				common.request(url,null,method).then(data => {
 					console.log("加载当前聊天=======");
 				    //console.log(JSON.stringify(data));
 				  this.list = data.data;
-				})
+				}).catch(err => {
+					console.log("加载当前聊天发生异常");
+				});
 			},
 			
 			//发送消息
@@ -247,247 +311,130 @@
 						}
 						break;
 				}
-				var msg = common.getMessage(common.MSG_TYPE_SEND, 1, 1, content, null, null);
+				var msg = common.getMessage(common.MSG_TYPE_SEND, this.chatData.userid,this.chatData.friendid, content, null, null);
 			    console.log(msg);
 				lastMsg = msg;
 			    //发送消息
 				Vue.prototype.socketTask.send({
 					data:JSON.stringify(msg),
 					success(){
-						console.log("发送成功========");
+						console.log(JSON.stringify(msg));
 						//更新
 						console.log("更新消息成功=========");
 						that.list.push(msg.chatRecord);
+						//清空输入框,要延时更新，要不然直接更新会导致不立刻渲染
+						setTimeout(() => {that.content = '' ;}, 0);
+						
+						//滑到底部
+						that.scrollToBottom();  
+						
 					},
 					fail(){
 						console.log("发送失败========");
 					}
 				});
-				//that.saveHost(content);
-				that.content = "";
-			
+				
+				  
 			},
 			
-			getList: function() {
-				this.time=Date.parse(new Date())/1000;
-				var that = this;
-				if (this.per_page == 0) return false;
-				that.app.get({
-					url: that.app.apiHost + "/chatrecord/findByUserIdAndFriendId?userid=1&friendid=1053624336767909888",
-					data: {
-						per_page: that.per_page
-					},
-					success: function(res) {
-						that.per_page = res.data.per_page;
-						var list = that.list;
-						for (var i in res.data.list) {
-							list.unshift(res.data.list[i]);
-						}						
-						//that.list =list;
-						that.list = res.data;
-						console.log(JSON.stringify(res.data));
-						setTimeout(function() {
-							that.scrollTop += 10;
-						}, 100)
-						setTimeout(function(){
-							const query = uni.createSelectorQuery().in(that);
-							 query.select('#main').boundingClientRect(res => {
-								if(that.oldsch==0){
-									uni.pageScrollTo({
-										scrollTop:100000,
-										duration:1
-									})
-								}else{
-									var st=res.height-that.oldsch-windowHeight+160;
-									uni.pageScrollTo({
-										scrollTop:st,
-										duration:1
-									})
-								}
-								that.oldsch=res.height;
-							}).exec();
-						},10)
-					}
-				})
-			},
-			getPage: function() {
-				var that = this;
-
-				that.app.get({
-					url: that.app.apiHost + "/module.php?m=im_group&a=home&ajax=1&groupid=" + groupid,
-					success: function(res) {
-						gid = res.data.ws_gid;
-						that.per_page = res.data.per_page;
-						that.group = res.data.group;
-						that.user=res.data.user;
-						uni.setNavigationBarTitle({
-							title: res.data.group.title
-						})
-						/*
-						var list=chatDb.msgList({
-							gid:gid
-						});
-						*/
-						that.list = res.data.list;
-						that.wsInit();
-						setTimeout(function() {
-							that.wsConn = true;
-						}, 1000)
-						var it=setTimeout(function(){
-							const query = uni.createSelectorQuery().in(that);
-							query.select('#main').boundingClientRect(function(res) {				  
-								that.oldsch=res.height;
-							}).exec();
-							uni.pageScrollTo({
-								scrollTop:that.scrollTop+10,
-								duration:1
-							})
-							
-						},30)
-					}
-				})
-			},
-			wsInit: function() {
-				var that = this;
-
-				if (this.wsConn) {
-					ws.close();
-				}
-				ws = uni.connectSocket({
-					url: that.app.wsHost,
-					complete: function(res) {
-
-					}
-				});
-
-				ws.onOpen(function(res) {
-
-					var msg = JSON.stringify({
-						type: "login",
-						k: uid,
-						gid: gid,
-						appGroupId: that.group.groupid,
-						content: "login"
-					});
-					ws.send({
-						data: msg
-					});
-				});
-				ws.onError(function(res) {
-
-
-				});
-				ws.onMessage(function(e) {
-					var res = JSON.parse(e.data);
-					console.log(res);
-					switch (res.type) {
-						case "login":
-							break;
-						case "say":
-							var json = {
-								gid: gid,
-								imgurl: that.group.imgurl,
-								appGroupId: that.group.groupid,
-								appGroupTitle: that.group.title,
-								uid: res.wsclient_from,
-								touid: res.wsclient_to,
-								content: res.content,
-								time: res.time,
-								isme: uid == res.wsclient_from ? true : false
-							}
-								
-							that.addMsg(json);
-							//chatDb.addGroup(json);
-							setTimeout(function() {
-								uni.pageScrollTo({
-									scrollTop: 1000000
-								});
-							}, 100)
-							break;
-					}
-				});
-			},
-			addMsg: function($msg) {
-				var list = this.list;
-				list.push($msg);
-				this.list = list;
-
-			},
+			//滑到底部
+			scrollToBottom: function () {
+				        console.log("滑动了=============")
+			            var that = this;
+			            var query = uni.createSelectorQuery();
+			            query.selectAll('.m-item').boundingClientRect();
+			            query.select('#scrollview').boundingClientRect();
+			            query.exec((res) => {
+			                that.style.mitemHeight = 0;
+			                res[0].forEach((rect) => that.style.mitemHeight = that.style.mitemHeight + rect.height + 40);   //获取所有内部子元素的高度
+			　　　　　　　　　　 // 因为vue的虚拟DOM 每次生成的新消息都是之前的，所以采用异步setTimeout    主要就是添加了这红字
+			　　　　　　　　　　 setTimeout(() => {
+			                　　if (that.style.mitemHeight > (that.style.contentViewHeight - 100)) {   //判断子元素高度是否大于显示高度
+			                    　　that.scrollTop = that.style.mitemHeight - that.style.contentViewHeight    //用子元素的高度减去显示的高度就获益获得序言滚动的高度
+			                　　}
+			　　　　　　　　　}, 100);
+			　　　　　　　});
+			 },
+			
+			
 			addEmo: function(s) {
 				s = "\\" + s + " ";
 				this.content += s;
 			},
-			saveHost: function(content) {
-				var that = this;
-				that.app.post({
-					url: that.app.apiHost + "/module.php?m=im_group_msg&a=save",
-					data: {
-						groupid: that.group.groupid,
-						content: content
-					},
-					success: function(res) {
-						console.log(res)
-					}
-
-				})
-			},
+			
 			choiceImg: function() {
 				//选择图片发送
 				var that = this;
 				inPage = true;
 				uni.chooseImage({
+					count: 1, //默认9
+					sizeType: ['original', 'compressed'],
 					sourceType: ["album"],
 					fail: function(e) {
 						inPage = false;
 					},
-					success: function(e) {
+					success: function(res) {
 						inPage = false;
+						var url = '';
 						uni.uploadFile({
-							url: that.app.apiHost + "/index.php?m=upload&a=img&ajax=1&authcode=" + that.app.getAuthCode(), //仅为示例，非真实的接口地址
-							filePath: e.tempFilePaths[0],
-							name: 'upimg',
-							dataType: "json",
-
-							success: (res) => {
-								if (!res.data.error) {
-									var rs = JSON.parse(res.data);
-									if (!rs.error) {
-										that.send("pic", rs.data.trueimgurl);
-									}
+							url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
+							filePath: res.tempFilePaths[0],
+							header: {
+								"Content-Type": "multipart/form-data",
+								"token": that.token
+							},
+							name: 'file',
+							formData: {
+								'file': 'file'
+							},
+							success: (e) => {
+								//未登陆,自动跳到登陆界面
+								console.log('上传');
+								if(e.statusCode === 405){
+									console.log("未登陆")
+									uni.navigateTo({
+										url: "/pages/shilu-login/login"
+									});
 								}
-							}
+								var ee = JSON.parse(e.data);
+								if(ee.code === 1){
+									url = ee.data;
+									that.send("pic", url);
+								}
+						    },
 						});
-					}
-				})
-			},
-			choiceFile: function() {
-				//选择图片发送
-				var that = this;
-				inPage = true;
-				uni.chooseImage({
-					fail: function(e) {
-						inPage = false;
+					
 					},
-					success: function(e) {
-						inPage = false;
-						uni.uploadFile({
-							url: that.app.apiHost + "/index.php?m=upload&a=upload&ajax=1&authcode=" + that.app.getAuthCode(), //仅为示例，非真实的接口地址
-							filePath: e.tempFilePaths[0],
-							name: 'upimg',
-							dataType: "json",
-
-							success: (res) => {
-								if (!res.error) {
-									var rs = JSON.parse(res.data);
-									if (!rs.error) {
-										that.send("file", rs.trueimgurl);
-									}
-								}
-							}
-						});
-					}
-				})
+				});
 			},
+			// choiceFile: function() {
+			// 	//选择文件发送
+			// 	var that = this;
+			// 	inPage = true;
+			// 	uni.chooseImage({
+			// 		fail: function(e) {
+			// 			inPage = false;
+			// 		},
+			// 		success: function(e) {
+			// 			inPage = false;
+			// 			uni.uploadFile({
+			// 				url: that.app.apiHost + "/index.php?m=upload&a=upload&ajax=1&authcode=" + that.app.getAuthCode(), //仅为示例，非真实的接口地址
+			// 				filePath: e.tempFilePaths[0],
+			// 				name: 'upimg',
+			// 				dataType: "json",
+
+			// 				success: (res) => {
+			// 					if (!res.error) {
+			// 						var rs = JSON.parse(res.data);
+			// 						if (!rs.error) {
+			// 							that.send("file", rs.trueimgurl);
+			// 						}
+			// 					}
+			// 				}
+			// 			});
+			// 		}
+			// 	})
+			// },
 			catchImg: function() {
 				var that = this;
 				inPage = true;
@@ -498,21 +445,35 @@
 					sourceType: ["camera"],
 					success: function(e) {
 						inPage = false;
+						var url = '';
 						uni.uploadFile({
-							url: that.app.apiHost + "/index.php?m=upload&a=img&ajax=1&authcode=" + that.app.getAuthCode(), //仅为示例，非真实的接口地址
+							url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
 							filePath: e.tempFilePaths[0],
-							name: 'upimg',
-							dataType: "json",
-
-							success: (res) => {
-								if (!res.data.error) {
-									var rs = JSON.parse(res.data);
-									if (!rs.data.error) {
-										that.send("pic", rs.data.trueimgurl);
-									}
+							header: {
+								"Content-Type": "multipart/form-data",
+								"token": that.token
+							},
+							name: 'file',
+							formData: {
+								'file': 'file'
+							},
+							success: (e) => {
+								//未登陆,自动跳到登陆界面
+								console.log('上传');
+								if(e.statusCode === 405){
+									console.log("未登陆")
+									uni.navigateTo({
+										url: "/pages/shilu-login/login"
+									});
 								}
-							}
+								var ee = JSON.parse(e.data);
+								if(ee.code === 1){
+									url = ee.data;
+									that.send("pic", url);
+								}
+						    },
 						});
+						
 					}
 				})
 			},
@@ -521,43 +482,78 @@
 				uni.chooseVideo({
 					count: 1,
 					success: function(e) {
+						var url = '';
+						
 						uni.uploadFile({
-							url: that.app.apiHost + "/index.php?m=upload&a=uploadmp4&ajax=1&authcode=" + that.app.getAuthCode(),
+							url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
 							filePath: e.tempFilePath,
-							name: 'upimg',
-							dataType: "json",
-
-							success: (res) => {
-								if (!res.data.error) {
-									var rs = JSON.parse(res.data);
-									if (!rs.error) {
-										that.send("video", rs.trueimgurl);
-									}
+							header: {
+								"Content-Type": "multipart/form-data",
+								"token": that.token
+							},
+							name: 'file',
+							formData: {
+								'file': 'file'
+							},
+							success: (e) => {
+								//未登陆,自动跳到登陆界面
+								console.log('上传');
+								if(e.statusCode === 405){
+									console.log("未登陆")
+									uni.navigateTo({
+										url: "/pages/shilu-login/login"
+									});
 								}
-							}
+								console.log(e);
+								console.log(e.data);
+								var ee = JSON.parse(e.data);
+								if(ee.code === 1){
+									url = ee.data;
+									that.send("video", url);
+								}
+						    },
 						});
+						
+						
 					}
 				})
 			},
 			recordUpload: function(fileurl) {
 				var that = this;
 				console.log(fileurl);
+				var url = '';
+				
 				uni.uploadFile({
-					url: that.app.apiHost + "/index.php?m=upload&a=uploadmp4&ajax=1&authcode=" + that.app.getAuthCode(),
+					url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
 					filePath: fileurl,
-					fileType: "audio",
-					name: 'upimg',
-					dataType: "json",
-
-					success: (res) => {
-						if (!res.data.error) {
-							var rs = JSON.parse(res.data);
-							if (!rs.error) {
-								that.send("audio", rs.trueimgurl);
-							}
+					header: {
+						"Content-Type": "multipart/form-data",
+						"token": that.token
+					},
+					name: 'file',
+					formData: {
+						'file': 'file'
+					},
+					success: (e) => {
+						//未登陆,自动跳到登陆界面
+						console.log('上传');
+						if(e.statusCode === 405){
+							console.log("未登陆")
+							uni.navigateTo({
+								url: "/pages/shilu-login/login"
+							});
 						}
-					}
+						console.log(e);
+						console.log(e.data);
+						var ee = JSON.parse(e.data);
+						if(ee.code === 1){
+							url = ee.data;
+							that.send("audio", url);
+						}
+				    },
 				});
+				
+				
 			},
 			aRecordToggle: function() {
 				if (this.aRecordIng) {
@@ -615,5 +611,12 @@
 
 	.f36:before {
 		font-size: 36px;
+	} 
+	
+	.msgCon {
+		width:auto;
+		display:inline-block;
+		background-color: #009688;
+		background-repeat: round;
 	}
 </style>

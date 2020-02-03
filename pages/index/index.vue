@@ -43,38 +43,46 @@
 						@scrolltolower="loadMore"
 						>
 						<!-- 
-							* 新闻列表 
+							* 帖子列表 
 							* 和nvue的区别只是需要把uni标签转为weex标签而已
 							* class 和 style的绑定限制了一些语法，其他并没有不同
 						-->
-						<view v-for="(item, index) in tabItem.newsList" :key="index" class="news-item">
-							<view @click="toPersonal()" style="display: flex; flex-direction: row;margin-bottom: 15upx;">
+						<view v-for="(item, index) in invList" :key="index" class="news-item">
+							<view @click="toPersonal(item.userId)" style="display: flex; flex-direction: row;margin-bottom: 15upx;">
 								<view style=" width: 60upx;height: 60upx;border-radius:50%;overflow:hidden ;">
-									<image src="http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg"></image>
+									<image v-if="item.image != null && item.image != ''" :src="item.image"></image>
+									<image v-else src="http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg"></image>
 								</view>
-								<text style="margin-left: 10upx;">Justin</text>
+								<text v-if="item.nickname != null && item.nickname != ''" style="margin-left: 10upx;">{{item.nickname}}</text>
+								<text v-else style="margin-left: 10upx;">{{item.username}}</text>
 							</view>
 							<view @click="navToDetails(item)">
-								<text :class="['title', 'title'+item.type]">{{item.title}}</text>
-								<view v-if="item.images.length > 0" :class="['img-list', 'img-list'+item.type, item.images.length === 1 && item.type===3 ? 'img-list-single': '']">
+								<text :class="['title','con-item']">{{item.invContent}}</text>
+								<view v-if="item.invImage.length > 0" :class="['img-list', (item.invImage.length != 1 && item.invImage.length <= 3) ? 'img-list-single': '']">
 									<view 
-										v-for="(imgItem, imgIndex) in item.images" :key="imgIndex"
-										:class="['img-wrapper', 'img-wrapper'+item.type, item.images.length === 1 && item.type===3 ? 'img-wrapper-single': '']"
+										v-for="(imgItem, imgIndex) in item.invImage" :key="imgIndex"
+										:class="['img-wrapper', (item.invImage.length != 1 && item.invImage.length <= 3) ? 'img-wrapper-single': '']"
 									>
 										<image class="img" :src="imgItem"></image>
-										<view class="video-tip" v-if="item.videoSrc">
-											<image class="video-tip-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEC0lEQVRoQ+2ajVEVMRDHdzuwA6ACpQKxArECtQKxAqECoQKhAqECoQKxAqEDrWCdn7Nx8vJy+bp3T4YhM2+O8S7J/rO7//2IKo9k6CPBIU9Acpo0s10ReSkiPA8mtH0tIncicqOqPDcyZmvEhX8rIu8cQI9gtyJyKSIXc0ENA3EAnxxAj/BT356LyEdV/TWyWDcQM3smIgA4mtjwXkQ4aX4Mngj3QkSYy5PfTmb+laoeLg7EzBDga8aEEB4TOVfVAKAoj2sUc+QXQC0PxMzY8Esi3W8ROVbV05FTDHPMDC1AEBzEcqY1AeLMQQxtXANuZvjMa/cb/i6Oqo9kQKCFI1WtLl7bfOq9mUHd3/w9ND1F5f+WKAJxn/gebQiIg1Y/mAEEUsDX8J0zVZ0iljoQZydAYLuMrYCIwXOQrYc2qREzw4E/RAu/X9KcRrUX5mWBODX+jBY/UdXjuZuNznd5PnscepNjtikgODJpRzCp3VFaHBU+MTEOkSDMIJ0hFKyMNSAZbZA2NMUJn7ujqjebABDWyDDnXpqb5YDEvnGvqsHZi7I5CMgBxiHDxRx5bmSYGZlyyADWmCwHBN8IwjdRH5Im3B+En5UIJuYFBeMnjFtV3Y/frwDJmNV+K/1NAGEvIv+pqp7MUU1GthXzSoHE+VSzWRU0EsuOaUDhw+aWmNdKOEiBxOzQlYkWNJIqAiAI0V0dmhkZNvkXYyUkpEDYhFJ17cOaWXQACUtxaPhgc9JpZvFBr+Rg/xNI8B+0w0lXR0LDzUCIoE0bNPpISdC1uJD7uJQVlzTyEIFQgFGhMpo10pVfDfgIwlAiU9s0af4h+gglARkE8WURZ98G/V65Fhal3zgg3qnqXpVK/IMG0/rhAOYExDh9KgZEcqy4DtlEirKpTgutqLjsnk5RnEaLWeaUhiY0srFOS1KxrqVPtTS+2by8xsdsnkONNN5G0pDCQcVmtcaoLYVVV63e0zDo8L+0OVgvrNy84lIXemRiM022CtjynWsabVCwMdpKXQeSOlZXcGwRsPWbJAgyLZvOPOh2UKZWn6xYS0Dibl/IVF+1VoytJ15wbqyCtmkwKdIZGnZZE+9tmbLI4mC8VRuDAG8xpo00sQFDi2iRJrabU2jGBYVVmbMKxJ0/dzfSXeGVzM3ZiRZt2tGsgmDdJiAFMGiHNPxijk+YGV1NsuHgD82aCB82A4lomdohvf8jrQm3s61XbzgzAMJtVXwWOPZhD7F0AXEwnBrqjzv1sRCACnfp/HvIdsNlTbiDn+pgDuVn3UCCxN4wA1Bods+xrr8R26/yuuuULh8p8D0nSzsTE8ldOZcAhttgKsUhAEM+Ujty1xIm1PJfOK7nCh/LM2xaNVDbfv8EZNsnXtvvDyrmF1FIBKIwAAAAAElFTkSuQmCC"></image>
-										</view>
 									</view>
 								</view>
 								<!-- 空图片占位 -->
-								<view v-else class="img-empty"></view>
-								<view :class="['bot', 'bot'+item.type]">
-									<text class="author">{{item.author}}</text>
-									<text class="time">{{item.time}}</text>
+								<view v-else  :class="['img-list']">
+								  <view
+								  	:class="['img-wrapper']"
+								  >
+								  	<image class="img" :src="imgItem"></image>
+								  	<view class="video-tip" v-if="item.invVideo">
+								  		<image class="video-tip-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEC0lEQVRoQ+2ajVEVMRDHdzuwA6ACpQKxArECtQKxAqECoQKhAqECoQKxAqEDrWCdn7Nx8vJy+bp3T4YhM2+O8S7J/rO7//2IKo9k6CPBIU9Acpo0s10ReSkiPA8mtH0tIncicqOqPDcyZmvEhX8rIu8cQI9gtyJyKSIXc0ENA3EAnxxAj/BT356LyEdV/TWyWDcQM3smIgA4mtjwXkQ4aX4Mngj3QkSYy5PfTmb+laoeLg7EzBDga8aEEB4TOVfVAKAoj2sUc+QXQC0PxMzY8Esi3W8ROVbV05FTDHPMDC1AEBzEcqY1AeLMQQxtXANuZvjMa/cb/i6Oqo9kQKCFI1WtLl7bfOq9mUHd3/w9ND1F5f+WKAJxn/gebQiIg1Y/mAEEUsDX8J0zVZ0iljoQZydAYLuMrYCIwXOQrYc2qREzw4E/RAu/X9KcRrUX5mWBODX+jBY/UdXjuZuNznd5PnscepNjtikgODJpRzCp3VFaHBU+MTEOkSDMIJ0hFKyMNSAZbZA2NMUJn7ujqjebABDWyDDnXpqb5YDEvnGvqsHZi7I5CMgBxiHDxRx5bmSYGZlyyADWmCwHBN8IwjdRH5Im3B+En5UIJuYFBeMnjFtV3Y/frwDJmNV+K/1NAGEvIv+pqp7MUU1GthXzSoHE+VSzWRU0EsuOaUDhw+aWmNdKOEiBxOzQlYkWNJIqAiAI0V0dmhkZNvkXYyUkpEDYhFJ17cOaWXQACUtxaPhgc9JpZvFBr+Rg/xNI8B+0w0lXR0LDzUCIoE0bNPpISdC1uJD7uJQVlzTyEIFQgFGhMpo10pVfDfgIwlAiU9s0af4h+gglARkE8WURZ98G/V65Fhal3zgg3qnqXpVK/IMG0/rhAOYExDh9KgZEcqy4DtlEirKpTgutqLjsnk5RnEaLWeaUhiY0srFOS1KxrqVPtTS+2by8xsdsnkONNN5G0pDCQcVmtcaoLYVVV63e0zDo8L+0OVgvrNy84lIXemRiM022CtjynWsabVCwMdpKXQeSOlZXcGwRsPWbJAgyLZvOPOh2UKZWn6xYS0Dibl/IVF+1VoytJ15wbqyCtmkwKdIZGnZZE+9tmbLI4mC8VRuDAG8xpo00sQFDi2iRJrabU2jGBYVVmbMKxJ0/dzfSXeGVzM3ZiRZt2tGsgmDdJiAFMGiHNPxijk+YGV1NsuHgD82aCB82A4lomdohvf8jrQm3s61XbzgzAMJtVXwWOPZhD7F0AXEwnBrqjzv1sRCACnfp/HvIdsNlTbiDn+pgDuVn3UCCxN4wA1Bods+xrr8R26/yuuuULh8p8D0nSzsTE8ldOZcAhttgKsUhAEM+Ujty1xIm1PJfOK7nCh/LM2xaNVDbfv8EZNsnXtvvDyrmF1FIBKIwAAAAAElFTkSuQmCC"></image>
+								  	</view>
+								  </view>
+								</view>
+								<view :class="['bot','other']">
+									<text class="topName">#{{item.topName}}</text>
+									<text class="time">{{item.createTime}}</text>
 								</view>
 							</view>
-							
+							<view style="width: 100%; height: 2upx; margin-top: 10upx; background-color: #F5F5F5;"></view>
 						</view>
 						
 						<!-- 上滑加载更多组件 -->
@@ -88,8 +96,9 @@
 </template>
 
 <script>
+	import common from "@/common/common.js";
 	import mixAdvert from '@/components/mix-advert/vue/mix-advert';
-	import json from '@/json'
+	import json from '@/json';
 	import mixPulldownRefresh from '@/components/mix-pulldown-refresh/mix-pulldown-refresh';
 	import mixLoadMore from '@/components/mix-load-more/mix-load-more';
 	let windowWidth = 0, scrollTimer = false, tabBar;
@@ -105,6 +114,9 @@
 				scrollLeft: 0, //顶部选项卡左滑距离
 				enableScroll: true,
 				tabBars: [],
+				invList: [],
+				currentPage: 1,
+				pageSize: 10
 			}
 		},
 		computed: {
@@ -145,9 +157,22 @@
 			// #endif
 		},
 		methods: {
-			toPersonal(){
+			// // 下拉监听事件
+			// onPullDownRefresh: function() { 
+			//     console.log("下拉刷新......");
+			// 	this.loadInvList('refresh');
+			// 	setTimeout(function () {
+			// 	    uni.stopPullDownRefresh();
+			// 	}, 1000);
+			// },
+			// // 触底监听事件
+			// onReachBottom: function () {
+			//     console.log("触底......");
+			// },
+			toPersonal(userId){
+				console.log("userId:"+userId);
 				uni.navigateTo({
-					url:'../me/personal'
+					url:'../me/personal?userId='+userId
 				});
 			},
 			onNavigationBarButtonTap: function(e) { 
@@ -169,10 +194,11 @@
 					item.refreshing = 0;
 				})
 				this.tabBars = tabList;
-				this.loadNewsList('add');
+				this.loadInvList('add');
 			},
-			//新闻列表
-			loadNewsList(type){
+			//帖子列表
+			loadInvList(type){
+				var that = this;
 				let tabItem = this.tabBars[this.tabCurrentIndex];
 				
 				//type add 加载更多 refresh下拉刷新
@@ -188,32 +214,89 @@
 				}
 				// #endif
 				
+				var reqData = {
+					currentPage: this.currentPage,
+					pageSize: this.pageSize
+				}
+				
+				//请求列表
+				var url = common.apiHost+'/invitation/tInvitation/front/list?currentPage='+reqData.currentPage+'&pageSize='+reqData.pageSize;
+				var method = "GET";
+				common.request(url,null,method).then(data => {
+				 console.log("请求列表成功==============");
+				 //赋值
+				 setTimeout(() => {
+					 var record = null;
+					 record = data.data.data;
+					 var list = record.records;
+					 //console.log(JSON.stringify(list));
+					 for(var i = 0; i < list.length; i++){
+						 if(list[i].invImage != null && list[i].invImage != ''){
+							 var temp = list[i].invImage.split(',');
+							 list[i].invImage = temp;
+						 }
+						 
+					 }
+					 
+					 if(type === 'refresh'){
+					 		that.invList = []; //刷新前清空数组
+					 }
+					 
+					 // for(var i = 0; i < list.length; i++){
+						//  console.log(list[i].invImage.length);
+					 // }
+					 that.invList = list;
+					 
+					 
+					 //下拉刷新 关闭刷新动画
+					  if(type === 'refresh'){
+					  	this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
+					  	// #ifdef APP-PLUS
+					  	tabItem.refreshing = false;
+					  	// #endif
+					  	tabItem.loadMoreStatus = 0;
+					 }
+					 if(type === 'add'){
+					 		tabItem.loadMoreStatus = that.invList.length < 10 ? 2: 0;
+					 }
+					 
+				 },0);
+				 
+				  
+				  
+				}).catch((err) => {
+				   uni.showToast({
+				     title:"服务器异常...稍后再试",
+				   	 duration:2000
+				   })
+				});
+				
 				//setTimeout模拟异步请求数据
-				setTimeout(()=>{
-					let list = json.newsList;
-					list.sort((a,b)=>{
-						return Math.random() > .5 ? -1 : 1; //静态数据打乱顺序
-					})
-					if(type === 'refresh'){
-						tabItem.newsList = []; //刷新前清空数组
-					}
-					list.forEach(item=>{
-						item.id = parseInt(Math.random() * 10000);
-						tabItem.newsList.push(item);
-					})
-					//下拉刷新 关闭刷新动画
-					if(type === 'refresh'){
-						this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
-						// #ifdef APP-PLUS
-						tabItem.refreshing = false;
-						// #endif
-						tabItem.loadMoreStatus = 0;
-					}
-					//上滑加载 处理状态
-					if(type === 'add'){
-						tabItem.loadMoreStatus = tabItem.newsList.length > 40 ? 2: 0;
-					}
-				}, 600)
+				// setTimeout(()=>{
+				// 	let list = json.newsList;
+				// 	list.sort((a,b)=>{
+				// 		return Math.random() > .5 ? -1 : 1; //静态数据打乱顺序
+				// 	})
+				// 	if(type === 'refresh'){
+				// 		tabItem.newsList = []; //刷新前清空数组
+				// 	}
+				// 	list.forEach(item=>{
+				// 		item.id = parseInt(Math.random() * 10000);
+				// 		tabItem.newsList.push(item);
+				// 	})
+				// 	//下拉刷新 关闭刷新动画
+				// 	if(type === 'refresh'){
+				// 		this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
+				// 		// #ifdef APP-PLUS
+				// 		tabItem.refreshing = false;
+				// 		// #endif
+				// 		tabItem.loadMoreStatus = 0;
+				// 	}
+				// 	//上滑加载 处理状态
+				// 	if(type === 'add'){
+				// 		tabItem.loadMoreStatus = tabItem.newsList.length > 40 ? 2: 0;
+				// 	}
+				// }, 600)
 			},
 			//新闻详情
 			navToDetails(item){
@@ -223,7 +306,7 @@
 					author: item.author,
 					time: item.time
 				}
-				let url = item.videoSrc ? 'videoDetails' : 'details'; 
+				let url = item.invVideo ? 'videoDetails' : 'details'; 
 
 				uni.navigateTo({
 					url: `/pages/details/${url}?data=${JSON.stringify(data)}`
@@ -232,11 +315,13 @@
 			
 			//下拉刷新
 			onPulldownReresh(){
-				this.loadNewsList('refresh');
+				console.log("刷新......");
+				this.loadInvList('refresh');
 			},
 			//上滑加载
 			loadMore(){
-				this.loadNewsList('add');
+				 console.log("触底......");
+				this.loadInvList('add');
 			},
 			//设置scroll-view是否允许滚动，在小程序里下拉刷新时避免列表可以滑动
 			setEnableScroll(enable){
@@ -294,7 +379,7 @@
 					//第一次切换tab，动画结束后需要加载数据
 					let tabItem = this.tabBars[this.tabCurrentIndex];
 					if(this.tabCurrentIndex !== 0 && tabItem.loaded !== true){
-						this.loadNewsList('add');
+						this.loadInvList('add');
 						tabItem.loaded = true;
 					}
 				}, 300)
@@ -397,6 +482,12 @@
 		width: 100%;
 		height: 100%;
 	}
+	
+	.img-item {
+		margin-top: 20upx;
+		margin-bottom: 20upx;
+	}
+	
 	.news-item{
 		position:relative;
 	}
@@ -418,10 +509,22 @@
 	.bot{
 		flex-direction: row;
 	}
-	.author{
+	.topName {
 		font-size: 26upx;
-		color: #aaa;
+		color: #000000;
 	}
+	.img-list-item {
+		height: 300upx;
+		width: 400upx;
+	}
+	.video-item {
+		margin-top: 20upx;
+		margin-bottom: 20upx;
+	}
+	.con-item {
+		margin-bottom: 20upx;
+	}
+	
 	.time{
 		font-size: 26upx;
 		color: #aaa;
@@ -506,5 +609,8 @@
 	.video-tip-icon{
 		width: 60upx;
 		height:60upx; 
+	}
+	.other {
+		margin-top: 15upx;
 	}
 </style>

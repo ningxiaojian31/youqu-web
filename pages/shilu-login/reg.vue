@@ -17,7 +17,7 @@
 			<view class="list-call">
 				<image class="img" src="/static/shilu-login/check.png"></image>
 				<input class="biaoti" v-model="msgCode" type="number" maxlength="4" placeholder="验证码" />
-				<view class="yzm" :class="{ yzms: second>0 }" @tap="getcode">{{yanzhengma}}</view>
+				<view class="yzm" :class="{ yzms: second>0 }" @tap="getcode">{{checkMsg}}</view>
 			</view>
 			<!-- <view class="list-call">
 				<image class="img" src="/static/shilu-login/4.png"></image>
@@ -60,15 +60,12 @@
 			};
 		},
 		computed:{
-			yanzhengma(){
-				if(this.second==0){
+			checkMsg(){
+				console.log("开始获取==========");
+				if(this.second==0 || this.second ==1){
 					return '获取验证码';
 				}else{
-					if(this.second<10){
-						return '重新获取0'+this.second;
-					}else{
-						return '重新获取'+this.second;
-					}
+					return '重新获取'+this.second;
 				}
 			}
 		},
@@ -80,10 +77,20 @@
 				this.xieyi = !this.xieyi;
 			},
 			getcode(){
-				if(this.second>0){
-					return;
-				}
-				this.second = 60;
+				
+				//定时器
+				var interval = setInterval(() => {
+				   this.second = this.second - 1;
+				}, 1000);
+				setTimeout(() => {
+				   clearInterval(interval);
+				 }, 60000);
+
+			   if(this.second>0){
+				 return;
+			    }
+			   this.second = 59;
+			
 				
 				var reqData = {
 					username: this.username,
@@ -126,7 +133,7 @@
 				common.request(url,reqData,method).then(data => {
 				  if(data.data.code === 1){
 					  //注册成功
-					  uni.navigateTo({
+					  uni.switchTab({
 					  	url: "../me/me"
 					  });
 					  //保存登录信息

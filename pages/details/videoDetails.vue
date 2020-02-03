@@ -3,35 +3,35 @@
 		<view class="video-wrapper">
 			<video 
 				class="video"
-				src="https://dcloud-img.oss-cn-hangzhou.aliyuncs.com/guide/uniapp/%E7%AC%AC1%E8%AE%B2%EF%BC%88uni-app%E4%BA%A7%E5%93%81%E4%BB%8B%E7%BB%8D%EF%BC%89-%20DCloud%E5%AE%98%E6%96%B9%E8%A7%86%E9%A2%91%E6%95%99%E7%A8%8B@20181126.mp4" 
+				:src="detailInv.invVideo"
 				controls
-				objectFit="fill"
 				:autoplay="false"
 			></video>
 		</view>
 		<scroll-view class="scroll" scroll-y>
 			<view class="scroll-content">
 				<view class="introduce-section">
-					<text class="title">{{detailData.title}}</text>
-					<view class="introduce">
-						<text class="introduce">简介简介简介简介简介简介，简介简介简介简介简介简介简介，简介简介简介简介简介简介。</text>
-						<text class="yticon icon-xia show-icon"></text>
+					<text class="title">{{detailInv.invId}}</text>
+					<view>
+						<text>{{detailInv.invContent}}</text>
+						<view class="img-item-1"></view>
 					</view>
 					<view class="actions">
-						<view class="action-item">
+						<view @click="invLaudAdd" class="action-item">
 							<text class="yticon icon-dianzan-ash"></text>
-							<text>75</text>
+							<text>{{detailInv.invLaud}}</text>
 						</view>
 						<!-- <view class="action-item">
 							<text class="yticon icon-dianzan-ash reverse"></text>
-							<text>6</text>
+							<text>6</text>invLaud
 						</view> -->
-						<view class="action-item">
+						<view @click="share" class="action-item">
 							<text class="yticon icon-fenxiang2"></text>
 							<text>分享</text>
 						</view>
-						<view class="action-item">
-							<text class="yticon icon-shoucang active"></text>
+						<view @click="invCollectAdd" class="action-item">
+							<text v-if="comSign" class="yticon icon-shoucang active"></text>
+							<text v-else class="yticon icon-shoucang inactive"></text>
 							<text>收藏</text>
 						</view>
 					</view>
@@ -40,21 +40,26 @@
 				<view class="container" v-show="loading === false">
 					<!-- 评论 -->
 					<view class="s-header">
-						<text class="tit">网友评论</text>
+						<text class="tit">趣友评论</text>
 					</view>
 					<view class="evalution">
 						<view  v-for="(item, index) in evaList" :key="index"
 							class="eva-item"
 						>
-							<image :src="item.src" mode="aspectFill"></image>
+							<view @click="toPersonal(item.userId)">
+								<image v-if="item.image == null || item.image == ''" mode="aspectFill" src="../../static/chatImage.png" ></image>
+								<image v-else :src="item.image" mode="aspectFill"></image>
+							</view>
+			
 							<view class="eva-right">
-								<text>{{item.nickname}}</text>
-								<text>{{item.time}}</text>
-								<view class="zan-box">
-									<text>{{item.zan}}</text>
+								<text v-if="item.nickname != null && item.nickname != ''">{{item.nickname}}</text>
+								<text v-else>{{item.username}}</text>
+								<text>{{item.createTime}}</text>
+								<view @click="comLaudAdd(item.id)" class="zan-box">
+									<text>{{item.comLaud}}</text>
 									<text class="yticon icon-shoucang"></text>
 								</view>
-								<text class="content">{{item.content}}</text>
+								<text class="content">{{item.comContent}}</text>
 							</view>
 						</view>
 					</view>
@@ -69,11 +74,12 @@
 				<input 
 					class="input"
 					type="text" 
+					v-model="comContent"
 					placeholder="评论一下吧" 
 					placeholder-style="color:#adb1b9;"
 				/>
 			</view>
-			<text class="confirm-btn">发表</text>
+			<text @click="sendMSg" class="confirm-btn">发表</text>
 		</view>
 	</view>
 </template>
@@ -81,43 +87,235 @@
 <script>
 	import json from '@/json';
 	import mixLoading from '@/components/mix-loading/mix-loading';
+	import common from "@/common/common.js";
 	export default {
 		components: {
 			mixLoading
 		},
 		data() {
 			return {
+				invId: 0,
+				userId: 0,
+				comContent: '',
+				comSign: false,
 				loading: true,
 				detailData: {},
+				detailInv: {},
 				newsList: [],
-				evaList: [],
+				evaList: []
 			}
 		},
 		onLoad(options){
-			console.log(options.data);
 			this.detailData = JSON.parse(options.data);
-			this.loadNewsList();
-			this.loadEvaList();
+			this.invId = this.detailData.id;
+			//获取登录人信息
+			var that = this;
+			uni.getStorage({  //携带token
+			    key: 'user',  
+			    success: function(ress) {
+					that.userId = ress.data.id;
+			    }
+			});
+			this.loadDetailInv();
+			//更新收藏状态
+			this.loadCollectStatus();
 		},
 		methods: {
-			//获取推荐列表
-			async loadNewsList(){
-				let list = await json.newsList;
-				setTimeout(()=>{
-					list.sort((a,b)=>{
-						return Math.random() > .5 ? -1 : 1; //静态数据打乱顺序
-					})
-					list.forEach(item=>{
-						if(item.images.length > 0){
-							this.newsList.push(item);
-						}
-					})
-					this.loading = false;
-				}, 1000)
+			//朋友圈分享
+			share(){
+			  uni.share({
+			        provider: "weixin",
+			        scene: "WXSenceTimeline",
+			        type: 0,
+			        href: "http://uniapp.dcloud.io/",
+			        title: "友趣社区",
+			        summary: "我正在使用友趣社区，快来一起来体验吧！",
+			        imageUrl: "https://img-cdn-qiniu.dcloud.net.cn/uniapp/images/uni@2x.png",
+			        success: function (res) {
+			            uni.showToast({
+			              title:"分享成功",
+			              duration:2000
+			            })
+			        },
+			        fail: function (err) {
+			           uni.showToast({
+			             title:"分享失败",
+			             duration:2000
+			           })
+			        }
+			      });
 			},
-			//获取评论列表
-			async loadEvaList(){
-				this.evaList = await json.evaList;
+			//帖子点赞
+			invLaudAdd(){
+				var that = this;
+				var reqData = {
+					userId: that.userId,
+					poId: 'laud-inv-'+that.invId,
+				}
+				var url = common.apiHost+'/invitation/tInvitation/laud/add';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+					uni.showToast({
+					  title:"只能点一次赞哦~",
+					  duration:2000
+					})
+					
+					//重新加载
+					that.loadDetailInv();
+				});
+			},
+			//评论点赞
+			comLaudAdd(comId){
+				var that = this;
+				var reqData = {
+					userId: that.userId,
+					poId: 'laud-com-'+that.invId+'-'+comId,
+				}
+				var url = common.apiHost+'/invitation/tInvitation/laud/add';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+					uni.showToast({
+					  title:"只能点一次赞哦~",
+					  duration:2000
+					})
+					
+					//重新加载
+					that.loadDetailInv();
+				});
+			},
+			//收藏
+			invCollectAdd(){
+				var that = this;
+				if(that.comSign){
+					//取消收藏
+					var reqData = {
+						userId: 'collect-inv-'+that.userId,
+						poId: that.invId,
+					}
+					var url = common.apiHost+'/invitation/tInvitation/collect/move';
+					var method = "POST";
+					common.request(url,reqData,method).then(data => {
+						if(data.data.code == 1){
+							that.comSign = false;
+							uni.showToast({
+							  title:"取消收藏成功",
+							  duration:2000
+							})
+						}
+						
+					});
+				}else{
+					//收藏
+					var reqData = {
+						userId: 'collect-inv-'+that.userId,
+						poId: that.invId,
+					}
+					var url = common.apiHost+'/invitation/tInvitation/collect/add';
+					var method = "POST";
+					common.request(url,reqData,method).then(data => {
+						if(data.data.code == 1){
+							that.comSign = true;
+							uni.showToast({
+							  title:"收藏成功",
+							  duration:2000
+							})
+						}
+						
+					});
+				}
+				
+			},
+			//收藏的状态
+			loadCollectStatus(){
+				var that = this;
+				var reqData = {
+					userId: 'collect-inv-'+that.userId,
+					poId: that.invId,
+				}
+				var url = common.apiHost+'/invitation/tInvitation/collect/or';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+					if(data.data.code == 1){
+						that.comSign = data.data.data;
+					}
+					
+				});
+			},
+			//进个人主页
+			toPersonal(userId){
+				console.log("userId:"+userId);
+				uni.navigateTo({
+					url:'../me/personal?userId='+userId
+				});
+			},
+			//发表评论
+			sendMSg(){
+				var that = this;
+				if(that.comContent == null || that.comContent == ''){
+					uni.showToast({
+					  title:"发表的评论不能为空哦~",
+						 duration:2000
+					})
+				}else{
+					var that = this;
+					var reqData = {
+						userId: that.userId,
+						invId: that.invId,
+						comContent: that.comContent
+					}
+					var url = common.apiHost+'/invitation/tComment/save';
+					var method = "POST";
+					common.request(url,reqData,method).then(data => {
+						if(data.data.code != 1){
+							uni.showToast({
+							  title:"发表评论失败,请稍后再试...",
+								 duration:2000
+							})
+						}else{
+							uni.showToast({
+							  title:"发表评论成功",
+								 duration:2000
+							})
+							//重新加载
+							that.loadDetailInv();
+							that.comContent = '';
+						}
+						that.loading = false;
+					}).catch(err => {
+						uni.showToast({
+						  title:"服务器异常，发表评论失败...",
+							 duration:2000
+						})
+						that.loading = false;
+					})
+				}
+				
+			},
+			//获取帖子详情
+			async loadDetailInv(){
+				var that = this;
+				var url = common.apiHost+'/invitation/tInvitation/front/get/'+that.invId;
+				var method = "GET";
+				common.request(url,null,method).then(data => {
+					if(data.data.code != 1){
+						uni.showToast({
+						  title:"稍后再试...",
+							 duration:2000
+						})
+					}else{
+						console.log("加载详情: "+that.invId)
+						that.detailInv = data.data.data;
+						that.evaList = that.detailInv.commentList;
+						
+					}
+					that.loading = false;
+				}).catch(err => {
+					uni.showToast({
+					  title:"服务器异常，请稍后再试...",
+						 duration:2000
+					})
+					that.loading = false;
+				})
 			},
 			redirectToDetail(){
 				uni.redirectTo({
@@ -338,5 +536,14 @@
 			padding-left: 20upx;
 			color: #0d9fff;
 		}
+		
+	}
+	.img-item-1{
+		width: 100%;
+		height: 20upx;
+		background-color: #ffffff;
+	}
+	.item-time {
+		margin-left: 20upx;
 	}
 </style>

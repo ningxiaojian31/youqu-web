@@ -1,20 +1,39 @@
-import appconfig from '@/common/config'
-const defaultPrefix = appconfig.baseUrl.defaultPrefix
-const baseUrl = process.env.NODE_ENV === 'development' ? appconfig.baseUrl.dev : appconfig.baseUrl.pro
+import common from "@/common/common.js";
+const baseUrl = common.apiHost;
 let uploadTask;
 export const uploadFile = async function(filePath) {
+	var url = '';
+	var token = '';
+	uni.getStorage({  //携带token
+		key: 'user',  
+		success: function(ress) {
+		  token = ress.data.token;
+	    }
+	});
 	uploadTask = uni.uploadFile({
-		url: baseUrl + defaultPrefix + 'File/Upload', //仅为示例，换成自己的上传地址
+		url: baseUrl + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
 		filePath: filePath,
 		header: {
-			"Authorization": "Bearer " + uni.getStorageSync('token')
+			"Content-Type": "multipart/form-data",
+			"token": token
 		},
 		name: 'file',
 		formData: {
-			'user': 'test'
+			'file': 'file'
 		},
 		success: (res) => {
+			//未登陆,自动跳到登陆界面
+			console.log('上传');
+			if(res.statusCode === 405){
+				console.log("未登陆")
+				uni.navigateTo({
+					url: "/pages/shilu-login/login"
+				});
+			}
 			console.log("success:" + JSON.stringify(res));
+			console.log('图片路径：==============='+url);
+			url = res.data.data;
+			return url;
 		},
 		fail: (error) => {
 			console.log("error:" + JSON.stringify(error));

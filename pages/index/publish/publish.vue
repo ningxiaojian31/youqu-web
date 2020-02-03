@@ -15,10 +15,16 @@
 		</view>
 		<view class="padding  text-black">
 			<!-- <text class="lg cuIcon-voicefill" style="padding: 20upx;" @touchstart="voiceClick"></text> -->
-			<text class="lg cuIcon-picfill" style="padding: 20upx;" @touchstart="imageClick"></text>
-			<text class="lg cuIcon-videofill" style="padding: 20upx;" @touchstart="videoClick"></text>
+			<!-- <view> -->
+				<radio-group @change="radioChange" class="signs">
+						<label class="radio"><radio value="1" checked="true" />图片</label>
+						<label class="radio"><radio value="2" />视频</label>
+				</radio-group>
+			<!-- </view> -->
+			<text class="lg cuIcon-picfill" style="padding: 20upx;" v-if="sign == 1" @touchstart="imageClick"></text>
+			<text class="lg cuIcon-videofill" style="padding: 20upx;" v-if="sign == 2" @touchstart="videoClick"></text>
 			<!-- #ifdef APP-PLUS -->
-			<text class="lg cuIcon-camerafill" style="padding: 20upx;" @touchstart="cameraClick"></text>
+			<!-- <text class="lg cuIcon-camerafill" style="padding: 20upx;" @touchstart="cameraClick"></text> -->
 			<!-- #endif -->
 			<!-- <view class="cu-tag round bg-black light fr">#话题</view> -->
 			<view class="action">
@@ -40,28 +46,66 @@
 
 <script>
 	import permision from "@/common/permission.js"
+	import common from "@/common/common.js";
 	import {
 		uploadFile
 	} from "@/common/request_api/upload.js"
 	export default {
 		name: "publish",
-		components: {},
+		component: {
+			common
+		},
 		data() {
 			return {
+				sign: 1,
+				userId: 0,
 				content: "",
 				imagePath: [],
 				videoPath: "",
 				isPublish: false,
-				topics: ["话题1", "话题2"],
-				pickIndex: 0,
+				topics: ["话题1"],
+				topicsId:[],
+				pickIndex: 0
 			}
 		},
 		onLoad() {
-			// uni.switchTab({
-			// 	url: '/pages/article/index'
-			// });
+			//获取登录人信息
+			var that = this;
+			uni.getStorage({  //携带token
+			    key: 'user',  
+			    success: function(ress) {
+					that.userId = ress.data.id;
+			    }
+			});
+			this.getTopicList();
 		},
 		methods: {
+			//获取话题，默认10条
+			getTopicList: function(){
+				var reqData = {
+					
+				};
+				var url = common.apiHost+'/invitation/tTopic/list';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+					console.log(data.data.data);
+				  if(data.data.code == 1){
+					  //查询成功
+					  this.topics = [];
+					  var list = data.data.data.records;
+					  for(var i = 0; i < list.length; i++){
+						  this.topics.push(list[i].topName);
+						  this.topicsId.push(list[i].id);
+					  }
+				  }
+				}).catch((err) => {
+				   console.log("出现异常了")
+				});
+			},
+			radioChange: function(e){
+				//选择视频还是图片
+				this.sign = e.detail.value;
+			},
 			bindPickerChange: function(e) {
 			    this.pickIndex = e.target.value
 			 },
@@ -69,14 +113,42 @@
 				this.content = e.detail.value
 			},
 			PublishContent() {
-				this.isPublish = true;
-				if (this.imagePath.length > 0) { //发布图片
-					uploadFile(this.imagePath[0]);
-					this.isPublish = false;
-				} else if (this.videoPath) { //发布视频
-					uploadFile(this.videoPath);
-					this.isPublish = false;
+				//发布帖子
+				var reqData = {
+					invContent: this.content,
+					invType: this.sign,
+					userId: this.userId,
+					invImage:this.imagePath.toString(),
+					invVideo:this.videoPath,
+					topId:this.topicsId[this.pickIndex]
 				}
+				
+				var url = common.apiHost+'/invitation/tInvitation/save';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+				  if(data.data.code == 1){
+					  //发帖成功，跳转到首页
+					  uni.switchTab({
+					  	url: "../index"
+					  });
+					  
+					  uni.showToast({
+					    title:data.data.data,
+					  	duration:2000
+					  })
+				  }else{
+					  uni.showToast({
+					    title:data.data.msg,
+					  	duration:2000
+					  })
+				  }
+				  
+				}).catch((err) => {
+				   uni.showToast({
+				     title:"发帖失败...稍后再试",
+				   	 duration:2000
+				   })
+				});
 			},
 			// #ifdef APP-PLUS 
 			// async checkPermission() {
@@ -127,15 +199,56 @@
 			async imageClick() {
 				var _this = this;
 				uni.chooseImage({
-					count: 6, //默认9
+					count: 3, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], //从相册选择
 					success: function(res) {
+						//上传
 						_this.videoPath = "";
 						if (_this.imagePath.length + res.tempFilePaths.length > 6)
 							return _this.$uniToast.warning("最多上传6张图.");
-						_this.imagePath = _this.imagePath.concat(res.tempFilePaths);
-						console.log(JSON.stringify(res));
+						
+						var url = '';
+						var token = '';
+						uni.getStorage({  //携带token
+							key: 'user',  
+							success: function(ress) {
+							  token = ress.data.token;
+						    }
+						});
+						//循环上传多张图片
+						for(var i = 0; i < res.tempFilePaths.length; i++){
+							uni.uploadFile({
+								url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
+								filePath: res.tempFilePaths[i],
+								header: {
+									"Content-Type": "multipart/form-data",
+									"token": token
+								},
+								name: 'file',
+								formData: {
+									'file': 'file'
+								},
+								success: (res) => {
+									//未登陆,自动跳到登陆界面
+									console.log('上传');
+									if(res.statusCode === 405){
+										console.log("未登陆")
+										uni.navigateTo({
+											url: "/pages/shilu-login/login"
+										});
+									}
+									var ress = JSON.parse(res.data);
+									if(ress.code === 1){
+										url = ress.data;
+										_this.imagePath = _this.imagePath.concat(url);
+										console.log('图片路径：==============='+_this.imagePath);
+									}
+									
+								},
+							});
+						}
+						
 					}
 				});
 			},
@@ -145,59 +258,93 @@
 					count: 1,
 					sourceType: ['album'],
 					success: function(res) {
-						_this.imagePath = [];
-						_this.videoPath = res.tempFilePath;
-						console.log(res.tempFilePath);
+						var token = '';
+						uni.getStorage({  //携带token
+							key: 'user',  
+							success: function(ress) {
+							  token = ress.data.token;
+						    }
+						});
+						
+						//上传视频
+						uni.uploadFile({
+							url: common.apiHost + '/other/qiniu/file/upload', //仅为示例，换成自己的上传地址
+							filePath: res.tempFilePath,
+							header: {
+								"Content-Type": "multipart/form-data",
+								"token": token
+							},
+							name: 'file',
+							formData: {
+								'file': 'file'
+							},
+							success: (res) => {
+								//未登陆,自动跳到登陆界面
+								console.log('上传');
+								if(res.statusCode === 405){
+									console.log("未登陆")
+									uni.navigateTo({
+										url: "/pages/shilu-login/login"
+									});
+								}
+								var ress = JSON.parse(res.data);
+								if(ress.code === 1){
+									_this.videoPath = ress.data;
+									console.log('视频路径：==============='+_this.videoPath);
+								}
+								
+							},
+						});
 					}
 				});
 			},
-			//#ifdef APP-PLUS 
-			async cameraClick() {
-				// #ifdef APP-PLUS
-				let status = await this.checkPermission();
-				console.log(status);
-				if (status !== 1) {
-					return;
-				}
-				// #endif 
-				uni.showActionSheet({
-					itemList: ['图片拍摄', '视频拍摄', '取  消'],
-					success: function(res) {
-						// 获取设备默认的摄像头对象 
-						let cameraObj = plus.camera.getCamera();
-						let resolution = cameraObj.supportedImageResolutions[0];
-						let fmt = cameraObj.supportedImageFormats[0];
-						console.log("Resolution: " + resolution + ", Format: " + fmt);
-						if (res.tapIndex === 0)
-							cameraObj.captureImage(function(path) {
-									console.log("Capture image success: " + path);
-								},
-								function(error) {
-									console.log("Capture image failed: " + error.message);
-								}, {
-									resolution: resolution,
-									format: fmt
-								}
-							);
-						if (res.tapIndex === 1)
-							cameraObj.startVideoCapture(
-								function(path) {
-									console.log("Capture image success: " + path);
-								},
-								function(error) {
-									console.log("Capture image failed: " + error.message);
-								}, {
-									resolution: resolution,
-									format: fmt
-								}
-							);
-					},
-					fail: function(res) {
-						console.log(res.errMsg);
-					}
-				});
-			},
-			// #endif
+			// //#ifdef APP-PLUS 
+			// async cameraClick() {
+			// 	// #ifdef APP-PLUS
+			// 	let status = await this.checkPermission();
+			// 	console.log(status);
+			// 	if (status !== 1) {
+			// 		return;
+			// 	}
+			// 	// #endif 
+			// 	uni.showActionSheet({
+			// 		itemList: ['图片拍摄', '视频拍摄', '取  消'],
+			// 		success: function(res) {
+			// 			// 获取设备默认的摄像头对象 
+			// 			let cameraObj = plus.camera.getCamera();
+			// 			let resolution = cameraObj.supportedImageResolutions[0];
+			// 			let fmt = cameraObj.supportedImageFormats[0];
+			// 			console.log("Resolution: " + resolution + ", Format: " + fmt);
+			// 			if (res.tapIndex === 0)
+			// 				cameraObj.captureImage(function(path) {
+			// 						console.log("Capture image success: " + path);
+			// 					},
+			// 					function(error) {
+			// 						console.log("Capture image failed: " + error.message);
+			// 					}, {
+			// 						resolution: resolution,
+			// 						format: fmt
+			// 					}
+			// 				);
+			// 			if (res.tapIndex === 1)
+			// 				cameraObj.startVideoCapture(
+			// 					function(path) {
+			// 						console.log("Capture image success: " + path);
+			// 					},
+			// 					function(error) {
+			// 						console.log("Capture image failed: " + error.message);
+			// 					}, {
+			// 						resolution: resolution,
+			// 						format: fmt
+			// 					}
+			// 				);
+			// 		},
+			// 		fail: function(res) {
+			// 			console.log(res.errMsg);
+			// 		}
+			// 	});
+			// },
+			// // #endif
 		}
 	};
 </script>
@@ -213,5 +360,16 @@
 		display: block;
 	}
 
+	.signs {
+		display: flex;
+		flex-direction: row;
+		height: 20upx;
+		margin-bottom: 40upx;
+		
+		.radio {
+			width: 130upx;
+			transform:scale(0.7);
+		}
+	}
 
 </style>

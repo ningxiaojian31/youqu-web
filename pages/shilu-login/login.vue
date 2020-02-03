@@ -56,7 +56,7 @@
 				common.request(url,reqData,method).then(data => {
 				  if(data.data.code === 1){
 					  //登录成功
-					  uni.navigateTo({
+					  uni.switchTab({
 					  	url: "../me/me"
 					  });
 					  //保存登录信息

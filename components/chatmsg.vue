@@ -1,12 +1,14 @@
 <template>
 	<view class="w1">
 		<view  v-for="(item,index) in nodes" :key="index">
-			<block v-if="item.type=='audio'" @click="playMusic(item.src)"><view class="iconfont f20 icon-video_light"></view></block>
+			<block v-if="item.type=='audio'" >
+				<view @click="playMusic(item.src)" class="iconfont f20 icon-video_light"></view>
+			</block>
 			<block v-if="item.type=='video'">
 				<video show-fullscreen-btn="true" controls="true"  class="w2-1"   :src="item.src"></video>
 			</block>
 			<block v-if="item.type=='img'">
-				<image :src="item.src" mode="widthFix" class="w100"></image>
+				<image :src="item.src" @click="touchImg(item.src)" mode="widthFix" class="w100"></image>
 			</block>
 			<block v-if="item.type=='file'">
 				<view @click="downFile(item.src)" class="iconfont icon-file f20"></view>
@@ -18,7 +20,8 @@
 					</view>
 			</block>
 			<block v-else >
-				<rich-text class="flex" :nodes="item.content"></rich-text>
+				<rich-text v-if="sign == 1" class="flex" :nodes="item.content"></rich-text>
+				<rich-text v-if="sign == 0" class="flex" style="color: red;" :nodes="item.content"></rich-text>
 			</block>
 			
 		</view>
@@ -30,7 +33,11 @@
 	import audioClass from "../common/audio.class.js";
 	export default{
 		props:{
-			content:""
+			content:"",
+			sign: {
+			    type: Number,
+			    default: 1,
+			}
 		},
 		data:function(){
 			return {
@@ -57,14 +64,43 @@
 			}else{
 				this.nodes=[{
 					type:"text",
-					content:emo.decodeEmo(this.content)
+					content:emo.decodeEmo(this.content),
 				}]
 			}
 			
 		},
+		watch: {
+		    content: function(){
+		        var con=this.content;
+		        
+		        var res;
+		        //匹配音乐
+		        var patt = new RegExp(/\[([^=]*)=([^\]]*)\]/g,"g");
+		        res=patt.exec(con);
+		         
+		        if(res){
+		        	con=res[2];
+		        	
+		        	this.nodes=[{
+		        		type:res[1],
+		        		src:con,
+		        		content:""
+		        		
+		        	}]
+		        }else{
+		        	this.nodes=[{
+		        		type:"text",
+		        		content:emo.decodeEmo(this.content),
+		        	}]
+		        }
+		    }  
+		},
 		methods:{
+			touchImg: function(url){
+				console.log("点击了图片");
+			},
 			playMusic:function(url){
-				 
+				console.log("点击了播放音乐")
 				audioClass.play(url);
 			},
 			downFile:function(url){

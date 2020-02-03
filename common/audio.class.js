@@ -17,13 +17,14 @@ module.exports={
 			mp.src = url;
 			this.url=url;
 			mp.onCanplay(() => {
+			  console.log("play");
 			  mp.play();
 			});
 			mp.onPlay(() => {
-			  
+			  console.log("play");
 			});
 			mp.onError((res) => {
-			 
+			 console.log("error");
 			});
 		}else{
 			mp=this.mp;

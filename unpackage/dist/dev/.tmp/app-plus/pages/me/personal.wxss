@@ -17,12 +17,10 @@
 .focas-fans.data-v-08db5cf7 {
   display: -webkit-box;
   display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
   -webkit-flex-direction: row;
-      -ms-flex-direction: row;
           flex-direction: row;
   float: right;
   width: 100%;
@@ -62,12 +60,10 @@
 .personPic.data-v-08db5cf7 {
   display: -webkit-box;
   display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
-      -ms-flex-direction: column;
           flex-direction: column;
   margin-top: 0rpx;
 }
@@ -82,12 +78,10 @@
 .personPic .item-other.data-v-08db5cf7 {
     display: -webkit-box;
     display: -webkit-flex;
-    display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
     -webkit-flex-direction: row;
-        -ms-flex-direction: row;
             flex-direction: row;
 }
 .personPic .item-other .item-name.data-v-08db5cf7 {
@@ -111,12 +105,10 @@
 .otherMsg.data-v-08db5cf7 {
   display: -webkit-box;
   display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
   -webkit-flex-direction: row;
-      -ms-flex-direction: row;
           flex-direction: row;
   margin-top: 30rpx;
   font-size: 33rpx;

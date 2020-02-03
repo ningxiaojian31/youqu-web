@@ -3,25 +3,30 @@
 		<view>
 			<image src="../../static/back.png" @click="back()" class="back"></image>
 		</view>
-		<view class="focas-fans">
-			<view class="item-focas" :class="{yzms: sign === true }" @tap="getFocas">+关注</view>
+		<view @click="invFocusAdd" class="focas-fans">
+			<view class="item-focas" v-if="sign" :class="{yzms: sign === true }" >已关注</view>
+			<view class="item-focas" v-else  :class="{yzms: sign === false }" >+关注</view>
 			<view class="item-fans"  @tap="sendMsg">私信</view>
 		</view>
 		<view  class="personPic" >
 			<view class="item-img">
-				<image :src="picture"></image>
+				<image v-if="user.image != null && user.image != ''" :src="user.image"></image>
+				<image v-else src="http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg"></image>
 			</view>
 			<view class="item-other">
-				<text class="item-name">{{username}}</text>
-				<image v-if="sex === 1" src="../../static/male.png" class="item-sex"></image>
-				<image v-if="sex === 0" src="../../static/female.png" class="item-sex"></image>
+				<text v-if="user.nickname != null && user.nickname != ''" class="item-name">{{user.nickname}}</text>
+				<text v-else class="item-name">{{user.username}}</text>
+				<image v-if="user.sex === 1" src="../../static/male.png" class="item-sex"></image>
+				<image v-if="user.sex === 2" src="../../static/female.png" class="item-sex"></image>
 			</view>
 		</view>
-		<text class="msg">{{msg}}</text>
+		<text class="msg">{{user.signature}}</text>
 		<view class="otherMsg">
 			<text class="item">{{like}} 获赞</text>
-			<text class="item">{{fans}} 粉丝</text>
-			<text class="item">{{focas}} 关注</text>
+			<text v-if="user.fans != null" class="item">{{user.fans}} 粉丝</text>
+			<text v-else class="item">0 粉丝</text>
+			<text v-if="user.focus != null" class="item">{{user.focus}} 关注</text>
+			<text v-else class="item">0 关注</text>
 		</view>
 	</view>
 	
@@ -34,32 +39,129 @@
 </template>
 
 <script>
+	import common from "@/common/common.js";
 	export default {
 		components: {
 		},
 		data() {
 			return {
 				sign : false,
-				sex: 0,
-				picture: "http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg",
-				username: "Justin",
-				msg: "这家伙很懒，什么都没写~",
-				like: 4000,
-				fans: 100,
-				focas: 30,
+				userId: 0,
+				friendId: 0,
+				like: 0,
+				user: {},
 				lists: ['A', 'B', 'C', 'D', 'E']
 			}
 		},
+		onLoad(options){
+			var that = this;
+			that.friendId = options.userId;
+			
+			//获取登录人信息
+			uni.getStorage({  
+			    key: 'user',  
+			    success: function(ress) {
+					that.userId = ress.data.id;
+			    }
+			});
+			
+			//加载详情
+			that.loadUserDetail();
+			
+			//更新关注状态
+			that.loadFocusStatus();
+			
+		},
 		methods: {
+			//加载详情
+			loadUserDetail(){
+				var that = this;
+				var url = common.apiHost+'/user/tUser/front/get/'+that.friendId;
+				var method = "GET";
+				common.request(url,null,method).then(data => {
+					if(data.data.code == 1){
+						that.user = data.data.data;
+					}
+					
+				}).catch(err => {
+					uni.showToast({
+					  title:"服务器错误，请稍后再试...",
+					  duration:2000
+					})
+				});
+			},
+			//关注
+			invFocusAdd(){
+				var that = this;
+				if(that.sign){
+					//取消关注
+					var reqData = {
+						userId: that.userId,
+						friendId: that.friendId,
+					}
+					var url = common.apiHost+'/user/tFocusFans/focus/move';
+					var method = "POST";
+					common.request(url,reqData,method).then(data => {
+						if(data.data.code == 1){
+							that.sign = false;
+							uni.showToast({
+							  title:"取消关注成功",
+							  duration:2000
+							})
+						}
+						
+					});
+				}else{
+					//关注
+					var reqData = {
+						userId: that.userId,
+						friendId: that.friendId,
+					}
+					var url = common.apiHost+'/user/tFocusFans/focus/add';
+					var method = "POST";
+					common.request(url,reqData,method).then(data => {
+						if(data.data.code == 1){
+							that.sign = true;
+							uni.showToast({
+							  title:"关注成功",
+							  duration:2000
+							})
+						}
+						
+					});
+				}
+				
+			},
+			//关注的状态
+			loadFocusStatus(){
+				var that = this;
+				var reqData = {
+					userId: that.userId,
+					friendId: that.friendId,
+				}
+				var url = common.apiHost+'/user/tFocusFans/focus/or';
+				var method = "POST";
+				common.request(url,reqData,method).then(data => {
+					if(data.data.code == 1){
+						that.sign = data.data.data;
+						console.log("关注状态："+that.sign);
+					}
+					
+				});
+			},
 			back: function(e){
 				uni.navigateBack(1);
 			},
-			getFocas: function(){
-				//关注
-				sign == true;
-			},
 			sendMsg: function(){
-				//私信
+				//发起私信
+				var data = {
+					userid: this.userId,
+					friendid: this.friendId
+				}
+				var reqData = JSON.stringify(data); // 这里转换成 字符串
+				uni.navigateTo({
+					url:"../netty/chat/chat/chat?socketTask="+reqData
+				})
 			},
 			
 			

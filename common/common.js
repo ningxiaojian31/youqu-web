@@ -1,7 +1,8 @@
 
 module.exports = {
-	apiHost:"http://10.74.158.23:9999",
-	wsHost:"ws://192.168.1.101:9001/ws", 
+	apiHost:"http://192.168.1.5:9999",
+	apiHost2:"http://192.168.1.5:9000",
+	wsHost:"ws://192.168.1.5:9001/ws", 
 	// 消息类型
 	MSG_TYPE_CONN: 0,		// 连接
 	MSG_TYPE_SEND: 1,		// 发送消息
@@ -105,9 +106,9 @@ module.exports = {
 	request: (url, data,method) => {
 		var token = "";
 		uni.getStorage({  //携带token
-		    key: 'x-auth-token',  
+		    key: 'user',  
 		    success: function(ress) {
-		        token = ress.data;
+		        token = ress.data.token;
 		    }
 		});
 	    var ops = { //请求参数
@@ -116,16 +117,23 @@ module.exports = {
 	        method: method,
 	        header:  {
 	        "Content-Type": "application/json; charset=UTF-8", //json格式参数
-			"x-auth-token": token
+			"token": token
 	        },
 		};
 	    var promise = new Promise(function(resolve, reject) {
 	        uni.request(ops).then((res) => {
-				    console.log("sucess===============");
-	                resolve(res[1]); //成功传递参数
-	            }
+				//未登陆,自动跳到登陆界面
+				if(res[1].data.code === -1){
+					console.log("未登陆")
+					uni.navigateTo({
+						url: "/pages/shilu-login/login"
+					});
+				}
+				console.log("sucess===============");
+	            resolve(res[1]); //成功传递参数
+	        }
 	        ).catch((err) => {
-				    console.log("fail===============");
+			
 	                reject(err); //失败传递参数
 	            }
 	        )

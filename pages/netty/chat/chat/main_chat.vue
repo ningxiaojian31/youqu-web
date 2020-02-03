@@ -2,30 +2,54 @@
 	<view>
 		<view class="main-body">
 			 
-			<block v-if="indexList.length>0">
-			<view v-for="(item,index) in indexList" :key="index" @click="goItem(item)" class="flex pd-10 bg-fff bdb">
-				<block v-if="item.gid==0">
-					<image class="wh-40 mgr-10 bd-radius-10" :src="item.user_head+'.100x100.jpg'"></image>
-					<view class="flex-1">
-						 
-						<view class="cl1 mgb-5">{{item.friendid}}</view>
-						 
-						<chat-msg :content="item.message"></chat-msg>
-					</view>
+			<block v-if="chatList.length>0">
+			<view v-for="(item,index) in chatList" :key="index" @click="goItem(item)" class="flex pd-10 bg-fff bdb">
+				<block v-if="item.hasRead==0">
+					<block v-if="item.friendid == userId">
+						<image v-if="item.image == null || item.image == ''" class="wh-40 mgr-10 bd-radius-10" src="../../../../static/chatImage.png" ></image>
+						<image v-if="item.image != null && item.image != ''" class="wh-40 mgr-10 bd-radius-10" :src="item.image"></image>
+						<view class="flex-1">
+							 
+							<view v-if="item.nickname == null || item.nickname == ''" class="cl1 mgb-5">{{item.userid}}</view>
+							<view v-if="item.nickname != null && item.nickname != ''" class="cl1 mgb-5">{{item.nickname}}</view>
+							<chat-msg :sign="0" :content="item.message"></chat-msg>
+							
+						</view>
+					</block>
+					<block v-else>
+						<image v-if="item.image == null || item.image == ''" class="wh-40 mgr-10 bd-radius-10" src="../../../../static/chatImage.png" ></image>
+						<image v-if="item.image != null && item.image != ''" class="wh-40 mgr-10 bd-radius-10" :src="item.image"></image>
+						<view class="flex-1">
+							 
+							<view v-if="item.nickname == null || item.nickname == ''" class="cl1 mgb-5">{{item.userid}}</view>
+							<view v-if="item.nickname != null && item.nickname != ''" class="cl1 mgb-5">{{item.nickname}}</view>
+							<chat-msg :sign="0" :content="item.message"></chat-msg>
+							
+						</view>
+					</block>
+				</block> 
+ 				<block v-else>
+					<block v-if="item.friendid == userId">
+						<image   class="wh-40 mgr-10 bd-radius-10" src="../../../../static/chatImage.png" :src="item.image"></image>
+						<view class="flex-1">
+							 
+							<view class="cl1 mgb-5" >{{item.userid}}</view>
+							<chat-msg :sign="1" :content="item.message"></chat-msg>
+						</view>
+					</block>
+					<block v-else>
+						<image   class="wh-40 mgr-10 bd-radius-10" :src="item.imgurl+'.100x100.jpg'"></image>
+						<view class="flex-1">
+							 
+							<view class="cl1 mgb-5" >{{item.friendid}}</view>
+							<chat-msg :sign="1" :content="item.message"></chat-msg>
+						</view>
+					</block>
 				</block>
-				<block v-else>
-					<image   class="wh-40 mgr-10 bd-radius-10" :src="item.imgurl+'.100x100.jpg'"></image>
-					<view class="flex-1">
-						 
-						<view class="cl1 mgb-5" >{{item.friendid}}</view>
-						 
-						<chat-msg :content="item.message"></chat-msg>
-					</view>
-				</block>
 				
 				
 				
-				<view class="cl3">{{item.time}}</view>
+				<view class="cl3 showTime">{{item.createtime}}</view>
 			</view>
 			</block>
 			<block v-else>
@@ -55,8 +79,9 @@
 			return {
 				userList: [],
 				groupList:[],
-				indexList:[],
+				chatList: [],
 				isLoad:false ,
+				userId: '',//当前登录人ID
 				//socket相关变量
 				socketTask: null,
 				// 确保websocket是打开状态
@@ -68,20 +93,43 @@
 			}
 		},
 		onLoad() {
-			console.log("onLoad====================");
+			var that = this;
 			//初始化socket连接
 			this.connectSocketInit();
 			//更新消息
+			//获取当前登录人信息
+			var token = "";
+			uni.getStorage({  //携带token
+			    key: 'user',  
+			    success: function(ress) {
+			        token = ress.data.token;
+					that.userId = (ress.data.id).toString();
+			    }
+			});
+			//未登录，跳转到登录页面
+			if(token == ''){
+				uni.navigateTo({
+					url: "/pages/shilu-login/login"
+				});
+			}
+			
 			this.loadChatSnapshot();
 			
 		},
+		onPullDownRefresh() { // 下拉监听事件
+		        console.log("下拉刷新===");
+		        this.loadChatSnapshot();
+		        setTimeout(function () {
+		            uni.stopPullDownRefresh();
+		        }, 1000);
+		},
 		mounted() {
-			this.test();
 		},
 		onShow(){
-			if(this.isLoad){
-				this.pmList();
-			}
+			// 刷新好友快照
+			// this.loadChatSnapshot();
+			// console.log("登录人："+this.userId);
+			// console.log("信息："+JSON.stringify(this.chatList));
 			
 		},
 		methods: {
@@ -89,25 +137,24 @@
 				audioClass.play(url);
 			},
 			goItem:function(item){
-				if(item.gid!=0 || item.gid!=""){
+				if(item.friendid == this.userId){
+					var temp = item.friendid;
+					item.friendid = item.userid;
+					item.userid = temp;
 					uni.navigateTo({
-						url:"chat?socketTask="+"1"
-					})
+						url:"chat?userid="+item.userid+"&friendid="+item.friendid+"&nickname="+item.nickname+"&image="+item.image
+					});
+					console.log("开始跳转----1111");
 				}else{
+					var reqData = JSON.stringify(item); // 这里转换成 字符串
 					uni.navigateTo({
-						url:"pm?uuid="+item.touserid
-					})
+						url:"chat?userid="+item.userid+"&friendid="+item.friendid+"&nickname="+item.nickname+"&image="+item.image
+					});
+					console.log("开始跳转----2222");
 				}
+				
 			},
-			pmList:function(){
-				var that=this;
-				that.app.get({
-					url:that.app.apiHost+"/module.php?m=im_msg_index",
-					success:function(res){
-						that.indexList=res.data.list;
-					}
-				})
-			},
+			
 			
 			
 			//websocket
@@ -131,18 +178,11 @@
 						 Vue.prototype.socketTask = this.socketTask;
 					}
 				   
-					// 注：只有连接正常打开中 ，才能正常成功发送消息
-					var message = common.getMessage(common.MSG_TYPE_SEND, 1, 1, "我是客户端的消息", null, null);
-					this.socketTask.send({
-					    data: message,
-						async success(){
-							console.log("发送消息成功");
-						},
-						async fail() {
-							console.log("发送消息失败");
-						}
-
-					});
+					// 建立用户关联通道连接信息
+					var buildMessage = common.getMessage(common.MSG_TYPE_CONN, that.userId, null, null, null, null);
+					console.log("发送用户关联通道信息================");
+					that.chat(JSON.stringify(buildMessage));
+					
 				
 					// 注：只有连接正常打开中 ，才能正常收到消息
 					this.socketTask.onMessage((res) => {
@@ -154,6 +194,12 @@
 						that.keepalive();
 					}, 10000);
 				})
+				
+				this.socketTask.onMessage((res) => {
+					console.log("收到服务器内容：" + res.data);
+					//更新快照
+					that.loadChatSnapshot();
+				});
 			
 				// 这里仅是事件监听【如果socket关闭了会执行】
 				this.socketTask.onClose(() => {
@@ -178,7 +224,6 @@
 				var that = this;
 				// 如果当前状态已经连接，无需再次初始化websocket
 				if(this.socketTask != null && this.socketTask != undefined ) {
-					console.log("发送心跳包================");
 					that.socketTask.send({
 						data:msg,
 						success(){
@@ -215,17 +260,23 @@
 			keepalive: function() {
 				// 构建对象
 				var heartMessage = common.getMessage(common.MSG_TYPE_KEEPALIVE, null, null, null, null, null);
+				console.log("发送心跳包================");
 				this.chat(JSON.stringify(heartMessage));
 			},
 				
 						
 			//更新聊天快照
 			loadChatSnapshot:function(){
-				var url = common.apiHost+'/chatrecord/findUnreadByUserid?userid=1';
+				var that = this;
+				var url = common.apiHost+'/chat/chatrecord/findListByUserId?userid='+that.userId;
 				var method = "GET";
 				common.request(url,null,method).then(data => {
-					console.log(JSON.stringify(data));
-				  this.indexList = data.data;
+					var list = data.data;
+					for(var i = 0; i < list.length; i++){
+						Vue.set(that.chatList,i,list[i]);
+					}
+					console.log("登录人："+that.userId);
+					console.log("信息："+JSON.stringify(that.chatList));
 				})
 				
 			}
@@ -236,5 +287,8 @@
 </script>
 
 <style>
-	 
+	 .showTime {
+		 margin-right: 0;
+		 font-size: 26upx;
+	 }
 </style>
