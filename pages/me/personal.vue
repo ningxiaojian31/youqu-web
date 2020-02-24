@@ -110,6 +110,9 @@
 							})
 						}
 						
+						//重新加载
+						that.loadUserDetail();
+						
 					});
 				}else{
 					//关注
@@ -127,6 +130,9 @@
 							  duration:2000
 							})
 						}
+						
+						//重新加载
+						that.loadUserDetail();
 						
 					});
 				}
