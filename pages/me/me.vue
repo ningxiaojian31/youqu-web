@@ -8,21 +8,28 @@
 				<view class="meMainBox">
 					
 					<!--头部-->
-					<view class="meHead">
-						<view class="meHeadAvatar"><image :src="avatarUrl" mode="aspectFill"></image></view>
-						<view class="meHeadName"><text@click="BindGetUserInfo()">{{ nickName }}</text></view>
+					<view class="meHead" @click="BindGetUserInfo()">
+						<view class="meHeadAvatar"><image :src="image" mode="aspectFill"></image></view>
+						<view class="meHeadName">
+							<block v-if="nickname == null || nickname == ''">
+								<text>{{ username }}</text>
+							</block>
+							<block v-else>
+								<text>{{ nickname }}</text>
+							</block>
+						</view>
 					</view>
 					<!--头部-->
 					
 					<!--模板-->
 					<view class="meOverBg">
 						<view class="meVisitor">
-							<view class="meVisitorLt">
-								<view class="meVisitorTxt_02">0</view>
+							<view class="meVisitorLt" @click="toMyFocus()">
+								<view class="meVisitorTxt_02">{{focusCount}}</view>
 								<view class="meVisitorTxt_01">关注</view>
 							</view>
-							<view class="meVisitorLt">
-								<view class="meVisitorTxt_02">0</view>
+							<view class="meVisitorLt" @click="toMyFans()">
+								<view class="meVisitorTxt_02">{{fansCount}}</view>
 								<view class="meVisitorTxt_01">粉丝</view>
 							</view>
 						</view>
@@ -33,15 +40,15 @@
 					<view class="meOverBg">
 						<view class="meVisitorTitle">个人相关</view>
 						<view class="meVisitor">
-							<view class="meOrderLt">
+							<view class="meOrderLt" @click="toMyInvitation()">
 								<view class="meOrderTxt_01"><image src="../../static/icon/invitation.png"></image></view>
 								<view class="meOrderTxt_02">我的帖子</view>
 							</view>
-							<view class="meOrderLt">
+							<view class="meOrderLt" @click="toMyComment()">
 								<view class="meOrderTxt_01"><image src="../../static/icon/comment.png"></image></view>
 								<view class="meOrderTxt_02">我的评论</view>
 							</view>
-							<view class="meOrderLt">
+							<view class="meOrderLt" @click="toMyCollect()">
 								<view class="meOrderTxt_01"><image src="../../static/icon/collect.png"></image></view>
 								<view class="meOrderTxt_02">我的收藏</view>
 							</view>
@@ -55,27 +62,15 @@
 					
 					<!--其他-->
 					<view class="meOverBg">
-						<view class="businessList">
+						<view class="businessList" @click="toSetting()">
 							<view class="businessListTxt">设置</view>
 						</view>
-						<view class="businessList">
+						<view class="businessList" @click="toAbout()">
 							<view class="businessListTxt">关于我们</view>
 						</view>
 					</view>
 					<!--其他-->
 					
-					<!--其他-->
-					<!-- <view class="meOverBg">
-						<view class="businessList">
-							<view class="businessListTxt"><image src="../../static/icon/meIcon_01.png"></image>其他1</view>
-							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
-						</view>
-						<view class="businessList">
-							<view class="businessListTxt"><image src="../../static/icon/meIcon_01.png"></image>其他2</view>
-							<view class="businessListYou"><image src="../../static/icon/you.png"></image></view>
-						</view>
-					</view> -->
-					<!--其他-->
 					
 				</view>
 			</view>
@@ -86,45 +81,106 @@
 </template>
 
 <script>
+	
+	import common from "@/common/common.js";
+	
 	export default{
 		data(){
 			return{
-				avatarUrl:'../../static/icon/avatar.png',//头像
-				nickName:'点击登录',
-				token:'',
-				loginState:'',
+				image:'../../static/chatImage.png',//头像
+				nickname:'点击登录',
+				focusCount: '0',
+				fansCount: '0',
+				userId: '',
 			}
 		},
 		onLoad() {
+			var that = this;
+			//获取当前登录人信息
+			uni.getStorage({  //携带token
+			    key: 'user',  
+			    success: function(ress) {
+					that.userId = ress.data.id;
+			    }
+			});
 			
 		},
 		onShow() {
-			
-			this.token = uni.getStorageSync('token');
-			
+			//加载个人信息
+			this.loadUserPerson();
 		},
 		methods:{
-			
-			//点击登录
+			//点击我的帖子
+			toMyInvitation: function(){
+				uni.navigateTo({
+					url:'./myInvitation'
+				});
+			},
+			//点击我的评论
+			toMyComment: function(){
+				uni.navigateTo({
+					url:'./myComment'
+				});
+			},
+			//点击我的收藏
+			toMyCollect: function(){
+				uni.navigateTo({
+					url:'./myCollect'
+				});
+			},
+			//点击关注
+			toMyFocus: function(){
+				uni.navigateTo({
+					url:'./myFocus'
+				});
+			},
+			//点击粉丝
+			toMyFans: function(){
+				uni.navigateTo({
+					url:'./myFans'
+				});
+			},
+			//点击个人信息
 			BindGetUserInfo:function(){
-				if ( this.loginState == 1 ) {
-				
-				} else{
-					let that = this;
-					console.log('还没登录');
+				if ( this.userId == null ) {
+					console.log("还没登录");
 					uni.navigateTo({
 						url:'../shilu-login/login'
 					});
-					// wx.getUserInfo({
-					// 	success: function (res) {
-					// 		//获取到的微信头像 昵称 性别
-					// 		that.nickName = res.userInfo.nickName;
-					// 		that.avatarUrl = res.userInfo.avatarUrl;
-					// 		that.loginState = 1;
-					// 	}
-					// });
+				} else{
+					uni.navigateTo({
+						url:'./info'
+					});
+					
 				}
-			},			
+			},	
+			//点击设置
+			toSetting: function(){
+				uni.navigateTo({
+					url:'./setting'
+				});
+			},
+			//关于我们
+			toAbout: function(){
+				uni.navigateTo({
+					url:'./about'
+				});
+			},
+		    loadUserPerson: function(){
+		    	var that = this;
+		    	var url = common.apiHost+'/user/tUser/front/personal/get/'+that.userId;
+		    	var method = "GET";
+		    	common.request(url,null,method).then(data => {
+		    		//更新用户
+					console.log(JSON.stringify(data.data.data));
+					var user = data.data.data;
+		    		that.image = user.image;
+					that.nickname = user.nickname;
+					that.focusCount = user.focusCount;
+					that.fansCount = user.fansCount;
+					console.log(JSON.stringify(user));
+		    	})
+		    },
 			
 		}
 	}

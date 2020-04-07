@@ -12,7 +12,7 @@
 			<view class="list-call">
 				<image class="img" src="/static/shilu-login/password.png"></image>
 				<input class="biaoti" v-model="password" type="text" maxlength="32" placeholder="登录密码" :password="!showPassword" />
-				<image class="img" :src="showPassword?'/static/shilu-login/op.png':'/static/shilu-login/cl.png'" @tap="display"></image>
+				<image class="img" @click="display_btn()" :src="showPassword?'/static/shilu-login/op.png':'/static/shilu-login/cl.png'" ></image>
 			</view>
 			<view class="list-call">
 				<image class="img" src="/static/shilu-login/check.png"></image>
@@ -70,7 +70,7 @@
 			}
 		},
 		methods: {
-			display() {
+			display_btn: function() {
 			    this.showPassword = !this.showPassword
 			},
 			xieyitong(){
@@ -80,6 +80,9 @@
 				
 				//定时器
 				var interval = setInterval(() => {
+					if(this.second<1){
+						return;
+					 }
 				   this.second = this.second - 1;
 				}, 1000);
 				setTimeout(() => {
@@ -87,7 +90,7 @@
 				 }, 60000);
 
 			   if(this.second>0){
-				 return;
+			   	   return;
 			    }
 			   this.second = 59;
 			

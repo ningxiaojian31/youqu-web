@@ -21,7 +21,7 @@
 		</view>
 		
 		<view class="xieyi">
-			<navigator url="forget" open-type="navigate">忘记密码</navigator>
+			<navigator open-type="navigate">忘记密码</navigator>
 			<text>|</text>
 			<navigator url="reg" open-type="navigate">注册账号</navigator>
 		</view>
@@ -55,20 +55,28 @@
 				var method = "POST";
 				common.request(url,reqData,method).then(data => {
 				  if(data.data.code === 1){
-					  //登录成功
-					  uni.switchTab({
-					  	url: "../me/me"
-					  });
+					  
 					  //保存登录信息
 					  uni.setStorage({
 					  	key:"user",
-						data:data.data.data
+					  	data:data.data.data,
 					  })
 					  
-					  uni.showToast({
-					    title:data.data.msg,
-					  	duration:2000
-					  })
+					  //保证顺序执行
+					  setTimeout(() => {
+					  	 
+						 //登录成功
+						 uni.switchTab({
+						 	url: "../me/me"
+						 });
+						 
+						 uni.showToast({
+						   title:data.data.msg,
+						 	duration:2000
+						 })
+					  },0);
+					  
+					  
 				  }else{
 					  uni.showToast({
 					    title:data.data.data,

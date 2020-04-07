@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "正在聊天",
-  "navigationBarBackgroundColor": "#3B7ED5",
-  "navigationBarTextStyle": "white",
-  "usingComponents": {
-    "chat-msg": "/components/chatmsg"
-  }
-}

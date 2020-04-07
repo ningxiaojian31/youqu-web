@@ -1,2 +1,0 @@
-setCssToHead([".",[1],"showTime { margin-right: 0; font-size: ",[0,26],"; }\n",],undefined,{path:"./pages/netty/chat/chat/main_chat.wxss"})();
-document.dispatchEvent(new CustomEvent("generateFuncReady", { detail: { generateFunc: $gwx('./pages/netty/chat/chat/main_chat.wxml') } }));

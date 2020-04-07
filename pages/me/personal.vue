@@ -9,9 +9,9 @@
 			<view class="item-fans"  @tap="sendMsg">私信</view>
 		</view>
 		<view  class="personPic" >
-			<view class="item-img">
-				<image v-if="user.image != null && user.image != ''" :src="user.image"></image>
-				<image v-else src="http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg"></image>
+			<view class="meHeadAvatar">
+				  <image v-if="user.image != null && user.image != ''" :src="user.image" mode="aspectFill"></image>
+				  <image v-else src="../../static/chatImage.png" mode="aspectFill"></image>
 			</view>
 			<view class="item-other">
 				<text v-if="user.nickname != null && user.nickname != ''" class="item-name">{{user.nickname}}</text>
@@ -159,14 +159,18 @@
 				uni.navigateBack(1);
 			},
 			sendMsg: function(){
+				var that = this;
 				//发起私信
 				var data = {
-					userid: this.userId,
-					friendid: this.friendId
+					userid: that.userId,
+					friendid: that.friendId,
+					nickname: that.user.nickname,
+					username: that.user.username,
+					image: that.user.image
 				}
-				var reqData = JSON.stringify(data); // 这里转换成 字符串
+				
 				uni.navigateTo({
-					url:"../netty/chat/chat/chat?socketTask="+reqData
+					url:"../netty/chat?userid="+data.userid+"&friendid="+data.friendid+"&nickname="+data.nickname+"&image="+data.image+"&username="+data.username
 				})
 			},
 			
@@ -287,5 +291,15 @@
 			margin-left: 25upx;
 		}
 	}
+	
+	.meHeadAvatar{ 
+		margin-top: 100upx;
+		margin-left: 20upx;
+		width: 100upx;
+		height: 100upx;
+		border-radius:50%;
+		overflow:hidden ;
+	}
+	.meHeadAvatar image{ width: 110upx;height: 110upx;display: block;border-radius: 50%; }
 
 </style>

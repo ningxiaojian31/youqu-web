@@ -90,7 +90,7 @@
       }
     },
     "uni-app": {
-      "compilerVersion": "2.5.1",
+      "compilerVersion": "2.6.5",
       "control": "v8",
       "nvueCompiler": "uni-app",
       "renderer": "auto",
@@ -111,7 +111,7 @@
           "text": "友趣"
         },
         {
-          "pagePath": "pages/netty/chat/chat/main_chat",
+          "pagePath": "pages/netty/main_chat",
           "iconPath": "static/tab-chat.png",
           "selectedIconPath": "static/tab-chat-current.png",
           "text": "信息"
@@ -129,5 +129,6 @@
       ],
       "selected": 0
     }
-  }
+  },
+  "usingComponents": {}
 }

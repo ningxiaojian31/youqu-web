@@ -1,8 +1,7 @@
 
 module.exports = {
-	apiHost:"http://192.168.1.5:9999",
-	apiHost2:"http://192.168.1.5:9000",
-	wsHost:"ws://192.168.1.5:9001/ws", 
+	apiHost:"http://192.168.1.7:9999",
+	wsHost:"ws://192.168.1.7:9001/ws", 
 	// 消息类型
 	MSG_TYPE_CONN: 0,		// 连接
 	MSG_TYPE_SEND: 1,		// 发送消息

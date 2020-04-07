@@ -49,9 +49,9 @@
 						-->
 						<view v-for="(item, index) in invList" :key="index" class="news-item">
 							<view @click="toPersonal(item.userId)" style="display: flex; flex-direction: row;margin-bottom: 15upx;">
-								<view style=" width: 60upx;height: 60upx;border-radius:50%;overflow:hidden ;">
-									<image v-if="item.image != null && item.image != ''" :src="item.image"></image>
-									<image v-else src="http://fc-feed.cdn.bcebos.com/0/pic/9107b498a0cbea000842763091e833b6.jpg"></image>
+								<view class="meHeadAvatar" >
+									<image class="meHeadAvatar-image" v-if="item.image != null && item.image != ''" :src="item.image" mode="aspectFill"></image>
+									<image class="meHeadAvatar-image" v-else src="../../static/chatImage.png" mode="aspectFill"></image>
 								</view>
 								<text v-if="item.nickname != null && item.nickname != ''" style="margin-left: 10upx;">{{item.nickname}}</text>
 								<text v-else style="margin-left: 10upx;">{{item.username}}</text>
@@ -116,7 +116,9 @@
 				tabBars: [],
 				invList: [],
 				currentPage: 1,
-				pageSize: 10
+				pageSize: 10,
+				socketTask: null,
+				userId: '',
 			}
 		},
 		computed: {
@@ -129,10 +131,13 @@
 				return `/pages/details/details?data=${JSON.stringify(data)}`;
 			}
 		},
-		async onLoad() {
+		onLoad() {
 			// 获取屏幕宽度
 			windowWidth = uni.getSystemInfoSync().windowWidth;
 			this.loadTabbars();
+			
+			//加载数据
+			this.loadInvList('refresh');
 		},
 		onReady(){
 			/**
@@ -177,7 +182,7 @@
 			},
 			onNavigationBarButtonTap: function(e) { 
 				uni.navigateTo({
-					url:'/pages/index/publish/publish'
+					url:'/pages/index/publish'
 				});
 			},
 			/**
@@ -613,4 +618,6 @@
 	.other {
 		margin-top: 15upx;
 	}
+	.meHeadAvatar{ float: left;width: 60upx; }
+	.meHeadAvatar-image{width: 60upx;height: 60upx;border-radius:50%;overflow:hidden ;}
 </style>

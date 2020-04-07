@@ -9,12 +9,18 @@
     "pages/shilu-login/login",
     "pages/shilu-login/reg",
     "pages/me/me",
-    "pages/chat/index",
-    "pages/chat/chat",
-    "pages/netty/chat/chat/chat",
-    "pages/netty/chat/chat/main_chat",
-    "pages/index/publish/publish",
-    "pages/me/personal"
+    "pages/netty/chat",
+    "pages/netty/main_chat",
+    "pages/index/publish",
+    "pages/me/personal",
+    "pages/me/info",
+    "pages/me/myInvitation",
+    "pages/me/myComment",
+    "pages/me/myCollect",
+    "pages/me/myFocus",
+    "pages/me/myFans",
+    "pages/me/setting",
+    "pages/me/about"
   ],
   "window": {
     "navigationBarTextStyle": "white",
@@ -35,7 +41,7 @@
         "text": "友趣"
       },
       {
-        "pagePath": "pages/netty/chat/chat/main_chat",
+        "pagePath": "pages/netty/main_chat",
         "iconPath": "static/tab-chat.png",
         "selectedIconPath": "static/tab-chat-current.png",
         "text": "信息"
@@ -48,20 +54,6 @@
       }
     ]
   },
-  "nvue": {
-    "pages": {
-      "pages/nvue/nvue.html": {
-        "window": {
-          "usingComponents": {},
-          "navigationBarTitleText": "首页",
-          "titleNView": false,
-          "navigationBarTextStyle": "white",
-          "bounce": "none"
-        },
-        "nvue": true
-      }
-    }
-  },
   "nvueCompiler": "uni-app",
   "renderer": "auto",
   "splashscreen": {
@@ -69,6 +61,6 @@
     "autoclose": false
   },
   "appname": "友趣社区",
-  "compilerVersion": "2.5.1",
+  "compilerVersion": "2.6.5",
   "usingComponents": {}
 }

@@ -117,4 +117,18 @@
 .otherMsg .item.data-v-08db5cf7 {
     margin-left: 25rpx;
 }
+.meHeadAvatar.data-v-08db5cf7 {
+  margin-top: 100rpx;
+  margin-left: 20rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.meHeadAvatar image.data-v-08db5cf7 {
+  width: 110rpx;
+  height: 110rpx;
+  display: block;
+  border-radius: 50%;
+}
 
