@@ -15,11 +15,11 @@ page{ background: #F5F5F5;
 }
 .meHeadAvatar image{ width: 110rpx;height: 110rpx;display: block;border-radius: 50%;
 }
-.meHeadName{ float: left;width: 81%;line-height: 120rpx;color: #FFFFFF;font-size: 28rpx;overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap;
+.meHeadName{ float: left;width: 81%;line-height: 120rpx;color: #FFFFFF;font-size: 28rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .meOverBg{ background: #FFFFFF;overflow: hidden;border-radius: 12rpx;margin-top: 30rpx;
 }
-.meVisitor{ display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex;-webkit-box-orient: horizontal;-webkit-box-direction: normal;-webkit-flex-direction: row;-ms-flex-direction: row;flex-direction: row;
+.meVisitor{ display: -webkit-box; display: -webkit-flex; display: flex;-webkit-box-orient: horizontal;-webkit-box-direction: normal;-webkit-flex-direction: row;flex-direction: row;
 }
 .meVisitorLt{ width: 50%;text-align: center;margin: 30rpx 0;
 }
@@ -33,7 +33,7 @@ page{ background: #F5F5F5;
 }
 .meVisitorTitle{ font-size: 30rpx;color: #333333;border-bottom: 1px #F5F5F5 solid;padding: 20rpx 30rpx;
 }
-.meOrderLt{ width: 25%;text-align: center;padding: 30rpx 0;-webkit-transition: all 0.4s;-o-transition: all 0.4s;transition: all 0.4s;
+.meOrderLt{ width: 25%;text-align: center;padding: 30rpx 0;-webkit-transition: all 0.4s;transition: all 0.4s;
 }
 .meOrderLt:active{ background: #E2E2E2;
 }
@@ -43,7 +43,7 @@ page{ background: #F5F5F5;
 }
 .meOrderTxt_02{ font-size: 24rpx;color: #666666;
 }
-.businessList{ overflow: hidden;padding: 30rpx;border-bottom: 1px #F5F5F5 solid;-webkit-transition: all 0.4s;-o-transition: all 0.4s;transition: all 0.4s;
+.businessList{ overflow: hidden;padding: 30rpx;border-bottom: 1px #F5F5F5 solid;-webkit-transition: all 0.4s;transition: all 0.4s;
 }
 .businessList:active{ background: #E2E2E2;
 }

@@ -42,10 +42,16 @@
     "statusbar": {
       "immersed": "supportedDevice",
       "style": "light",
-      "background": "#ec706b"
+      "background": "#3B7ED5"
     },
     "usingComponents": true,
     "distribute": {
+      "icons": {
+        "android": {
+          "xxhdpi": "C:/Users/Justin/Desktop/youqu.png",
+          "xhdpi": "C:/Users/Justin/Desktop/youqu.png"
+        }
+      },
       "google": {
         "permissions": [
           "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
@@ -74,6 +80,7 @@
       },
       "apple": {},
       "plugins": {
+        "ad": {},
         "audio": {
           "mp3": {
             "description": "Android平台录音支持MP3格式文件"
@@ -89,34 +96,37 @@
       }
     },
     "uni-app": {
-      "compilerVersion": "2.3.7",
+      "compilerVersion": "2.6.5",
       "control": "v8",
-      "nvueCompiler": "weex",
-      "renderer": "auto"
+      "nvueCompiler": "uni-app",
+      "renderer": "auto",
+      "nvue": {
+        "flex-direction": "column"
+      }
     },
     "tabBar": {
       "color": "#C0C4CC",
-      "selectedColor": "#fa436a",
+      "selectedColor": "#3B7ED5",
       "borderStyle": "rgba(0,0,0,0.4)",
       "backgroundColor": "#ffffff",
       "list": [
         {
           "pagePath": "pages/index/index",
-          "iconPath": "static/tab-home.png",
-          "selectedIconPath": "static/tab-home-current.png",
-          "text": "首页"
+          "iconPath": "static/tab-house.png",
+          "selectedIconPath": "static/tab-house-current.png",
+          "text": "友趣"
         },
         {
-          "pagePath": "pages/chat/index",
-          "iconPath": "static/tab-home.png",
-          "selectedIconPath": "static/tab-home-current.png",
-          "text": "信息中心"
+          "pagePath": "pages/netty/main_chat",
+          "iconPath": "static/tab-chat.png",
+          "selectedIconPath": "static/tab-chat-current.png",
+          "text": "信息"
         },
         {
           "pagePath": "pages/me/me",
-          "iconPath": "static/tab-home.png",
-          "selectedIconPath": "static/tab-home-current.png",
-          "text": "个人中心"
+          "iconPath": "static/tab-my.png",
+          "selectedIconPath": "static/tab-my-current.png",
+          "text": "我的"
         }
       ],
       "height": "50px",
@@ -125,5 +135,6 @@
       ],
       "selected": 0
     }
-  }
+  },
+  "usingComponents": {}
 }

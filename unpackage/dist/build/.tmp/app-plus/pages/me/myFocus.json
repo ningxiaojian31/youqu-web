@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "关注",
+  "enablePullDownRefresh": true,
+  "navigationBarBackgroundColor": "#3B7ED5",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {}
+}

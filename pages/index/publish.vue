@@ -133,7 +133,7 @@
 					  });
 					  
 					  uni.showToast({
-					    title:data.data.data,
+					    title:"发帖成功！审核时间为10分钟！",
 					  	duration:2000
 					  })
 				  }else{

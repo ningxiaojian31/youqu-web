@@ -46,6 +46,12 @@
     },
     "usingComponents": true,
     "distribute": {
+      "icons": {
+        "android": {
+          "xxhdpi": "C:/Users/Justin/Desktop/youqu.png",
+          "xhdpi": "C:/Users/Justin/Desktop/youqu.png"
+        }
+      },
       "google": {
         "permissions": [
           "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
@@ -74,6 +80,7 @@
       },
       "apple": {},
       "plugins": {
+        "ad": {},
         "audio": {
           "mp3": {
             "description": "Android平台录音支持MP3格式文件"

@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<view class="header">
-			<image src="../../static/shilu-login/log"></image>
+			<!-- <image src="../../static/shilu-login/logo"></image> -->
 		</view>
 		
 		<view class="list">

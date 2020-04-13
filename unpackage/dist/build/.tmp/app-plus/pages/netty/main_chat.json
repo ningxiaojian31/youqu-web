@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "聊天记录",
+  "enablePullDownRefresh": true,
+  "navigationBarBackgroundColor": "#3B7ED5",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "mt-footer": "/components/footer",
+    "chat-msg": "/components/chatmsg"
+  }
+}

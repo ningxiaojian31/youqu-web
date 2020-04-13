@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "信息中心",
-  "navigationBarBackgroundColor": "#3B7ED5",
-  "navigationBarTextStyle": "white",
-  "usingComponents": {
-    "mt-footer": "/components/footer",
-    "chat-msg": "/components/chatmsg"
-  }
-}
